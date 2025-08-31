@@ -279,7 +279,7 @@ const UserPanel = () => {
                             );
                         })}
 
-                        <Box mt={4} display="flex" justifyContent="center">
+                        <Box mt={4} display="flex" justifyContent="flex-end">
                             <Button 
                                 type="submit" 
                                 variant="contained"
