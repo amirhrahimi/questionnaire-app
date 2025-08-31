@@ -1,0 +1,26 @@
+{
+  "title": "Test Questionnaire",
+  "description": "A simple test questionnaire",
+  "questions": [
+    {
+      "text": "What is your favorite color?",
+      "type": 0,
+      "isRequired": true,
+      "order": 1,
+      "options": [
+        {
+          "text": "Red",
+          "order": 1
+        },
+        {
+          "text": "Blue",
+          "order": 2
+        },
+        {
+          "text": "Green",
+          "order": 3
+        }
+      ]
+    }
+  ]
+}

@@ -1,58 +1,85 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { CssBaseline, AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
+import AdminPanel from './components/AdminPanel';
+import UserPanel from './components/UserPanel';
 
-interface Forecast {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#2563eb',
+        },
+        secondary: {
+            main: '#16a34a',
+        },
+    },
+    typography: {
+        fontFamily: 'Roboto, Arial, sans-serif',
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+    },
+});
+
+function NavBar() {
+    const location = useLocation();
+    
+    return (
+        <AppBar position="static">
+            <Toolbar>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    Questionnaire System
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button 
+                        color="inherit" 
+                        component={Link} 
+                        to="/"
+                        variant={location.pathname === '/' ? 'outlined' : 'text'}
+                        sx={{ color: 'white', borderColor: 'white' }}
+                    >
+                        User Panel
+                    </Button>
+                    <Button 
+                        color="inherit" 
+                        component={Link} 
+                        to="/admin"
+                        variant={location.pathname.startsWith('/admin') ? 'outlined' : 'text'}
+                        sx={{ color: 'white', borderColor: 'white' }}
+                    >
+                        Admin Panel
+                    </Button>
+                </Box>
+            </Toolbar>
+        </AppBar>
+    );
 }
 
 function App() {
-    const [forecasts, setForecasts] = useState<Forecast[]>();
-
-    useEffect(() => {
-        populateWeatherData();
-    }, []);
-
-    const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tableLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
-
     return (
-        <div>
-            <h1 id="tableLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
-            {contents}
-        </div>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Router>
+                <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                    <NavBar />
+                    <Box sx={{ flex: 1, width: '100%' }}>
+                        <Routes>
+                            <Route path="/" element={<UserPanel />} />
+                            <Route path="/questionnaire/:id" element={<UserPanel />} />
+                            <Route path="/admin" element={<AdminPanel />} />
+                            <Route path="/admin/*" element={<AdminPanel />} />
+                        </Routes>
+                    </Box>
+                </Box>
+            </Router>
+        </ThemeProvider>
     );
-
-    async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        if (response.ok) {
-            const data = await response.json();
-            setForecasts(data);
-        }
-    }
 }
 
 export default App;
