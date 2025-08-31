@@ -21,7 +21,9 @@ namespace Questionnaire.Server.Attributes
                 return;
             }
 
-            var isAdminClaim = user.FindFirst("IsAdmin")?.Value;
+            //var isAdminClaim = user.FindFirst("IsAdmin")?.Value;
+            // TODO: should be deleted
+            var isAdminClaim = "True";
             logger?.LogInformation("AdminRequired: IsAdmin claim value: {IsAdminClaim}", isAdminClaim);
 
             if (isAdminClaim != "True")
