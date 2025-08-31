@@ -14,6 +14,7 @@ namespace Questionnaire.Server.Data
         public DbSet<QuestionOption> QuestionOptions { get; set; }
         public DbSet<QuestionnaireResponse> QuestionnaireResponses { get; set; }
         public DbSet<Response> Responses { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

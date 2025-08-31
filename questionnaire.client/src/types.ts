@@ -86,3 +86,21 @@ export interface QuestionnaireResult {
     totalResponses: number;
     questions: QuestionResult[];
 }
+
+// Authentication types
+export interface User {
+    id: number;
+    email: string;
+    name: string;
+    picture: string;
+    isAdmin: boolean;
+}
+
+export interface LoginRequest {
+    googleToken: string;
+}
+
+export interface LoginResponse {
+    token: string;
+    user: User;
+}
