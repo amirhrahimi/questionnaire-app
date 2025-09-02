@@ -13,6 +13,12 @@ import api from '../services/api';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your-google-client-id';
 
+// Debug logging - remove this after fixing
+console.log('Environment variables debug:');
+console.log('VITE_GOOGLE_CLIENT_ID:', import.meta.env.VITE_GOOGLE_CLIENT_ID);
+console.log('All env vars:', import.meta.env);
+console.log('Using client ID:', GOOGLE_CLIENT_ID);
+
 const LoginPage: React.FC = () => {
     const { login } = useAuth();
     const [error, setError] = React.useState<string | null>(null);
