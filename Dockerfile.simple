@@ -1,4 +1,4 @@
-# Alternative approach: Simple Dockerfile that builds only the backend
+# Simple Dockerfile that avoids project reference conflicts
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 # Install Node.js 20
@@ -7,22 +7,15 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 
 WORKDIR /src
 
-# Copy and build React app first
+# Build React app first (completely separate)
 COPY questionnaire.client/package*.json ./questionnaire.client/
 WORKDIR /src/questionnaire.client
 RUN npm install
 
-WORKDIR /src
 COPY questionnaire.client ./questionnaire.client/
-WORKDIR /src/questionnaire.client
 RUN npm run build
 
-# Now build the .NET app
-WORKDIR /src
-COPY Questionnaire.Server/Questionnaire.Server.csproj ./Questionnaire.Server/
-WORKDIR /src/Questionnaire.Server
-RUN dotnet restore
-
+# Copy .NET project files
 WORKDIR /src
 COPY Questionnaire.Server ./Questionnaire.Server/
 
@@ -30,9 +23,10 @@ COPY Questionnaire.Server ./Questionnaire.Server/
 RUN mkdir -p /src/Questionnaire.Server/wwwroot
 RUN cp -r /src/questionnaire.client/dist/* /src/Questionnaire.Server/wwwroot/
 
-# Publish .NET app
+# Build .NET app using the production project file (without React reference)
 WORKDIR /src/Questionnaire.Server
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet restore Questionnaire.Server.Production.csproj
+RUN dotnet publish Questionnaire.Server.Production.csproj -c Release -o /app/publish
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
