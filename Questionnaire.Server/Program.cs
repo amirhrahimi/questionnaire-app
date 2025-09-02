@@ -54,7 +54,7 @@ namespace Questionnaire.Server
             {
                 options.AddPolicy("AllowReactApp", policy =>
                 {
-                    policy.WithOrigins("https://localhost:5173", "http://localhost:5173")
+                    policy.AllowAnyOrigin()
                           .AllowAnyMethod()
                           .AllowAnyHeader();
                 });
@@ -64,6 +64,10 @@ namespace Questionnaire.Server
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
+
+            // Configure for Railway deployment
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            app.Urls.Add($"http://0.0.0.0:{port}");
 
             app.UseDefaultFiles();
             app.MapStaticAssets();
@@ -82,6 +86,9 @@ namespace Questionnaire.Server
             app.UseAuthorization();
 
             app.MapControllers();
+
+            // Add health check endpoint for Railway
+            app.MapGet("/health", () => "OK");
 
             app.MapFallbackToFile("/index.html");
 
