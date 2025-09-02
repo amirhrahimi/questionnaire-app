@@ -7,12 +7,17 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 
 WORKDIR /src
 
-# Build React app first (completely separate)
+# Copy React app files for dependency installation
 COPY questionnaire.client/package*.json ./questionnaire.client/
 WORKDIR /src/questionnaire.client
 RUN npm install
 
+# Copy all React source files at once
+WORKDIR /src
 COPY questionnaire.client ./questionnaire.client/
+
+# Build React app
+WORKDIR /src/questionnaire.client
 RUN npm run build
 
 # Copy .NET project files
