@@ -30,8 +30,15 @@ RUN cp -r /src/questionnaire.client/dist/* /src/Questionnaire.Server/wwwroot/
 
 # Build .NET app using the production project file (without React reference)
 WORKDIR /src/Questionnaire.Server
-RUN dotnet restore Questionnaire.Server.Production.csproj
-RUN dotnet publish Questionnaire.Server.Production.csproj -c Release -o /app/publish
+
+# Try building with the original project file but remove React references
+RUN sed -i '/<ProjectReference.*questionnaire\.client.*>/,+2d' Questionnaire.Server.csproj
+
+RUN dotnet restore Questionnaire.Server.csproj
+RUN dotnet publish Questionnaire.Server.csproj -c Release -o /app/publish
+
+# Debug: List the published files
+RUN ls -la /app/publish/
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final

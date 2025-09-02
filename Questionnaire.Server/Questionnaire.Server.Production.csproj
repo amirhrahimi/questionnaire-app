@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>e11018b2-a052-4577-8d01-0ee72d84d2a6</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AssemblyName>Questionnaire.Server</AssemblyName>
+    <RootNamespace>Questionnaire.Server</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
