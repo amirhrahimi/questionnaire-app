@@ -69,6 +69,11 @@ namespace Questionnaire.Server
             // Configure for Railway deployment
             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
             app.Urls.Add($"http://0.0.0.0:{port}");
+            
+            // Log startup information
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation("Starting application on port {Port}", port);
+            logger.LogInformation("Environment: {Environment}", app.Environment.EnvironmentName);
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -80,7 +85,11 @@ namespace Questionnaire.Server
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            // Only redirect to HTTPS in development (Railway handles SSL)
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
             
             app.UseCors("AllowReactApp");
 
@@ -90,7 +99,12 @@ namespace Questionnaire.Server
             app.MapControllers();
 
             // Add health check endpoint for Railway
-            app.MapGet("/health", () => "OK");
+            app.MapGet("/health", () => Results.Ok(new { 
+                status = "healthy", 
+                timestamp = DateTime.UtcNow,
+                environment = app.Environment.EnvironmentName,
+                port = Environment.GetEnvironmentVariable("PORT") ?? "8080"
+            }));
 
             app.MapFallbackToFile("/index.html");
 
