@@ -15,8 +15,34 @@ namespace Questionnaire.Server
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
-                options.UseInMemoryDatabase("QuestionnaireDb"));
+            // Configure database based on environment
+            if (builder.Environment.IsDevelopment())
+            {
+                // Use InMemory database for local development
+                builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                    options.UseInMemoryDatabase("QuestionnaireDb"));
+            }
+            else
+            {
+                // Use PostgreSQL for production (Railway)
+                var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") ?? 
+                                     builder.Configuration.GetConnectionString("DefaultConnection");
+                
+                if (!string.IsNullOrEmpty(connectionString))
+                {
+                    // Railway provides DATABASE_URL in a specific format
+                    connectionString = ConvertRailwayConnectionString(connectionString);
+                    
+                    builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                        options.UseNpgsql(connectionString));
+                }
+                else
+                {
+                    // Fallback to InMemory if no connection string
+                    builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                        options.UseInMemoryDatabase("QuestionnaireDb"));
+                }
+            }
 
             builder.Services.AddControllers();
 
@@ -66,6 +92,27 @@ namespace Questionnaire.Server
 
             var app = builder.Build();
 
+            // Auto-migrate database in production
+            if (!app.Environment.IsDevelopment())
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var context = scope.ServiceProvider.GetRequiredService<QuestionnaireDbContext>();
+                    try
+                    {
+                        context.Database.Migrate();
+                        var migrationLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                        migrationLogger.LogInformation("Database migration completed successfully");
+                    }
+                    catch (Exception ex)
+                    {
+                        var migrationLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                        migrationLogger.LogError(ex, "Database migration failed");
+                        throw;
+                    }
+                }
+            }
+
             // Configure for Railway deployment
             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
             
@@ -112,6 +159,24 @@ namespace Questionnaire.Server
             app.MapFallbackToFile("/index.html");
 
             app.Run();
+        }
+
+        // Helper method to convert Railway DATABASE_URL to PostgreSQL connection string
+        private static string ConvertRailwayConnectionString(string databaseUrl)
+        {
+            if (string.IsNullOrEmpty(databaseUrl))
+                return databaseUrl;
+
+            // Railway provides DATABASE_URL in format: postgresql://user:password@host:port/database
+            // We need to convert it to a standard connection string format
+            if (databaseUrl.StartsWith("postgresql://"))
+            {
+                var uri = new Uri(databaseUrl);
+                var connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+                return connectionString;
+            }
+
+            return databaseUrl;
         }
     }
 }
