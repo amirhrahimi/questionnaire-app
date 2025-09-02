@@ -1,0 +1,43 @@
+# Alternative approach: Simple Dockerfile that builds only the backend
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+# Install Node.js 20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+WORKDIR /src
+
+# Copy and build React app first
+COPY questionnaire.client/package*.json ./questionnaire.client/
+WORKDIR /src/questionnaire.client
+RUN npm install
+
+WORKDIR /src
+COPY questionnaire.client ./questionnaire.client/
+WORKDIR /src/questionnaire.client
+RUN npm run build
+
+# Now build the .NET app
+WORKDIR /src
+COPY Questionnaire.Server/Questionnaire.Server.csproj ./Questionnaire.Server/
+WORKDIR /src/Questionnaire.Server
+RUN dotnet restore
+
+WORKDIR /src
+COPY Questionnaire.Server ./Questionnaire.Server/
+
+# Copy React build to wwwroot
+RUN mkdir -p /src/Questionnaire.Server/wwwroot
+RUN cp -r /src/questionnaire.client/dist/* /src/Questionnaire.Server/wwwroot/
+
+# Publish .NET app
+WORKDIR /src/Questionnaire.Server
+RUN dotnet publish -c Release -o /app/publish
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+ENTRYPOINT ["dotnet", "Questionnaire.Server.dll"]

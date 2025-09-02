@@ -1,21 +1,17 @@
 # Use the official .NET 8.0 SDK image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Install Node.js 18
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+# Install Node.js 20 (latest LTS)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
 WORKDIR /src
 
 # Copy project files
 COPY ["Questionnaire.Server/Questionnaire.Server.csproj", "Questionnaire.Server/"]
-COPY ["questionnaire.client/questionnaire.client.esproj", "questionnaire.client/"]
 COPY ["questionnaire.client/package*.json", "questionnaire.client/"]
 
-# Restore .NET dependencies (only server project to avoid frontend dependency issues)
-RUN dotnet restore "Questionnaire.Server/Questionnaire.Server.csproj" --ignore-failed-sources
-
-# Install Node.js dependencies
+# Install Node.js dependencies first
 WORKDIR /src/questionnaire.client
 RUN npm install
 
@@ -27,12 +23,17 @@ COPY . .
 WORKDIR /src/questionnaire.client
 RUN npm run build
 
-# Copy React build output to .NET wwwroot
+# Remove the React project reference to avoid conflicts
+RUN sed -i '/<ProjectReference.*questionnaire\.client.*>/d' /src/Questionnaire.Server/Questionnaire.Server.csproj
+
+# Copy React build output to .NET wwwroot (this will be the only source)
+RUN rm -rf /src/Questionnaire.Server/wwwroot
 RUN mkdir -p /src/Questionnaire.Server/wwwroot
 RUN cp -r /src/questionnaire.client/dist/* /src/Questionnaire.Server/wwwroot/
 
-# Build .NET app (only the server project)
+# Restore and build .NET app (only the server project)
 WORKDIR /src/Questionnaire.Server
+RUN dotnet restore "Questionnaire.Server.csproj" --ignore-failed-sources
 RUN dotnet publish "Questionnaire.Server.csproj" -c Release -o /app/publish --no-restore
 
 # Final stage - runtime
