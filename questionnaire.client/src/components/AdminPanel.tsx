@@ -36,6 +36,7 @@ import {
 } from '@mui/icons-material';
 import type { Questionnaire, CreateQuestionnaire, CreateQuestion, QuestionnaireResult } from '../types';
 import { QuestionType } from '../types';
+import api from '../services/api';
 
 const AdminPanel = () => {
     const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
@@ -49,11 +50,8 @@ const AdminPanel = () => {
 
     const fetchQuestionnaires = async () => {
         try {
-            const response = await fetch('/api/admin/questionnaires');
-            if (response.ok) {
-                const data = await response.json();
-                setQuestionnaires(data);
-            }
+            const response = await api.get('/api/admin/questionnaires');
+            setQuestionnaires(response.data);
         } catch {
             console.error('Failed to fetch questionnaires');
         }
@@ -61,12 +59,8 @@ const AdminPanel = () => {
 
     const toggleQuestionnaireStatus = async (id: number) => {
         try {
-            const response = await fetch(`/api/admin/questionnaires/${id}/toggle`, {
-                method: 'PUT'
-            });
-            if (response.ok) {
-                fetchQuestionnaires();
-            }
+            await api.put(`/api/admin/questionnaires/${id}/toggle`);
+            fetchQuestionnaires();
         } catch {
             console.error('Failed to toggle questionnaire status');
         }
@@ -78,12 +72,8 @@ const AdminPanel = () => {
         }
 
         try {
-            const response = await fetch(`/api/admin/questionnaires/${id}`, {
-                method: 'DELETE'
-            });
-            if (response.ok) {
-                fetchQuestionnaires();
-            }
+            await api.delete(`/api/admin/questionnaires/${id}`);
+            fetchQuestionnaires();
         } catch {
             console.error('Failed to delete questionnaire');
         }
@@ -92,11 +82,8 @@ const AdminPanel = () => {
     const viewResults = async (id: number) => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/admin/questionnaires/${id}/results`);
-            if (response.ok) {
-                const data = await response.json();
-                setSelectedResults(data);
-            }
+            const response = await api.get(`/api/admin/questionnaires/${id}/results`);
+            setSelectedResults(response.data);
         } catch {
             console.error('Failed to fetch results');
         } finally {
@@ -106,25 +93,13 @@ const AdminPanel = () => {
 
     const createQuestionnaire = async (questionnaire: CreateQuestionnaire) => {
         try {
-            const response = await fetch('/api/admin/questionnaires', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(questionnaire)
-            });
-            if (response.ok) {
-                alert('Questionnaire created successfully!');
-                setShowCreateForm(false);
-                fetchQuestionnaires();
-            } else {
-                const errorText = await response.text();
-                console.error('Failed to create questionnaire:', errorText);
-                alert('Failed to create questionnaire. Please check the console for details.');
-            }
+            await api.post('/api/admin/questionnaires', questionnaire);
+            alert('Questionnaire created successfully!');
+            setShowCreateForm(false);
+            fetchQuestionnaires();
         } catch (error) {
             console.error('Failed to create questionnaire:', error);
-            alert('Network error. Please try again.');
+            alert('Failed to create questionnaire. Please try again.');
         }
     };
 

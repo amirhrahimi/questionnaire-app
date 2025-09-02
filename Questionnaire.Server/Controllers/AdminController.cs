@@ -3,11 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using Questionnaire.Server.Data;
 using Questionnaire.Server.DTOs;
 using Questionnaire.Server.Models;
+using Questionnaire.Server.Attributes;
 
 namespace Questionnaire.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [AdminRequired]
     public class AdminController : ControllerBase
     {
         private readonly QuestionnaireDbContext _context;
