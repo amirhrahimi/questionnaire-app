@@ -68,7 +68,10 @@ namespace Questionnaire.Server
 
             // Configure for Railway deployment
             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            app.Urls.Add($"http://0.0.0.0:{port}");
+            
+            // Use HTTPS for local development, HTTP for Railway (which handles SSL termination)
+            var protocol = app.Environment.IsDevelopment() ? "https" : "http";
+            app.Urls.Add($"{protocol}://0.0.0.0:{port}");
             
             // Log startup information
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
