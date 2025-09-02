@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import axios from 'axios';
 import type { LoginRequest, LoginResponse } from '../types';
+import api from '../services/api';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your-google-client-id';
 
@@ -29,7 +30,7 @@ const LoginPage: React.FC = () => {
                 googleToken: credentialResponse.credential
             };
 
-            const response = await axios.post<LoginResponse>('/api/auth/google-login', loginRequest);
+            const response = await api.post<LoginResponse>('/api/auth/google-login', loginRequest);
             
             login(response.data.token, response.data.user);
             

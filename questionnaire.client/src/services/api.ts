@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: '', // Same origin
+    baseURL: import.meta.env.VITE_API_BASE_URL || '', // Use env var or same origin
     headers: {
         'Content-Type': 'application/json',
     },
