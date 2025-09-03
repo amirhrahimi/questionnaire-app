@@ -19,8 +19,8 @@ namespace Questionnaire.Server
             if (builder.Environment.IsDevelopment())
             {
                 // Use InMemory database for local development
-                //builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
-                //    options.UseInMemoryDatabase("QuestionnaireDb"));
+                builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                    options.UseInMemoryDatabase("QuestionnaireDb"));
             }
             else
             {
@@ -86,7 +86,7 @@ namespace Questionnaire.Server
 
             var app = builder.Build();
 
-            // Auto-migrate database in production
+            // Auto-migrate database in production (only for relational databases)
             if (!app.Environment.IsDevelopment())
             {
                 using (var scope = app.Services.CreateScope())
@@ -94,9 +94,20 @@ namespace Questionnaire.Server
                     var context = scope.ServiceProvider.GetRequiredService<QuestionnaireDbContext>();
                     try
                     {
-                        context.Database.Migrate();
-                        var migrationLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-                        migrationLogger.LogInformation("Database migration completed successfully");
+                        // Only run migrations for relational databases (not in-memory)
+                        if (context.Database.IsRelational())
+                        {
+                            context.Database.Migrate();
+                            var migrationLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                            migrationLogger.LogInformation("Database migration completed successfully");
+                        }
+                        else
+                        {
+                            // For in-memory database, ensure it's created
+                            context.Database.EnsureCreated();
+                            var migrationLogger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                            migrationLogger.LogInformation("In-memory database created successfully");
+                        }
                     }
                     catch (Exception ex)
                     {
