@@ -35,8 +35,9 @@ const UserPanel = () => {
 
     const fetchQuestionnaires = async () => {
         try {
+            console.log('VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
             console.log('Fetching questionnaires...');
-            const response = await api.get('/questionnaire');
+            const response = await api.get('/api/questionnaire');
             console.log('Questionnaires data:', response.data);
             setQuestionnaires(response.data);
         } catch (error) {
@@ -57,7 +58,7 @@ const UserPanel = () => {
     const selectQuestionnaire = useCallback(async (id: number) => {
         setLoading(true);
         try {
-            const response = await api.get(`/questionnaire/${id}`);
+            const response = await api.get(`/api/questionnaire/${id}`);
             setSelectedQuestionnaire(response.data);
             initializeResponses(response.data);
         } catch (error) {
@@ -127,7 +128,7 @@ const UserPanel = () => {
         };
 
         try {
-            await api.post('/questionnaire/submit', submitData);
+            await api.post('/api/questionnaire/submit', submitData);
             setSubmitStatus('success');
             setTimeout(() => {
                 setSelectedQuestionnaire(null);
