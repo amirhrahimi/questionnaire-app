@@ -34,9 +34,9 @@ import {
     ToggleOn as ActivateIcon,
     Delete as DeleteIcon
 } from '@mui/icons-material';
-import type { Questionnaire, CreateQuestionnaire, CreateQuestion, QuestionnaireResult } from '../types';
-import { QuestionType } from '../types';
-import api from '../services/api';
+import type { Questionnaire, CreateQuestionnaire, CreateQuestion, QuestionnaireResult } from '../../types';
+import { QuestionType } from '../../types';
+import api from '../../services/api';
 
 const AdminPanel = () => {
     const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);

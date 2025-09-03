@@ -6,10 +6,10 @@ import {
     Typography,
     Alert
 } from '@mui/material';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import axios from 'axios';
-import type { LoginRequest, LoginResponse } from '../types';
-import api from '../services/api';
+import type { LoginRequest, LoginResponse } from '../../types';
+import api from '../../services/api';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your-google-client-id';
 

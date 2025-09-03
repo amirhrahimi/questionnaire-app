@@ -20,9 +20,9 @@ import {
     Chip
 } from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
-import type { Questionnaire, QuestionResponse, SubmitResponse } from '../types';
-import { QuestionType } from '../types';
-import api from '../services/api';
+import type { Questionnaire, QuestionResponse, SubmitResponse } from '../../types';
+import { QuestionType } from '../../types';
+import api from '../../services/api';
 
 const UserPanel = () => {
     const { id } = useParams<{ id: string }>();
