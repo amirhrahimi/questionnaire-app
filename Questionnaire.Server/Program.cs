@@ -19,8 +19,8 @@ namespace Questionnaire.Server
             if (builder.Environment.IsDevelopment())
             {
                 // Use InMemory database for local development
-                builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
-                    options.UseInMemoryDatabase("QuestionnaireDb"));
+                //builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                //    options.UseInMemoryDatabase("QuestionnaireDb"));
             }
             else
             {
@@ -35,12 +35,6 @@ namespace Questionnaire.Server
                     
                     builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
                         options.UseNpgsql(connectionString));
-                }
-                else
-                {
-                    // Fallback to InMemory if no connection string
-                    builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
-                        options.UseInMemoryDatabase("QuestionnaireDb"));
                 }
             }
 
