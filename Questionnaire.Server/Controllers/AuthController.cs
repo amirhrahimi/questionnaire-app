@@ -4,6 +4,8 @@ using Questionnaire.Server.Data;
 using Questionnaire.Server.DTOs;
 using Questionnaire.Server.Models;
 using Questionnaire.Server.Services;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Questionnaire.Server.Controllers
 {
@@ -15,17 +17,20 @@ namespace Questionnaire.Server.Controllers
         private readonly IGoogleOAuthService _googleOAuthService;
         private readonly IJwtService _jwtService;
         private readonly ILogger<AuthController> _logger;
+        private readonly IConfiguration _configuration;
 
         public AuthController(
             QuestionnaireDbContext context,
             IGoogleOAuthService googleOAuthService,
             IJwtService jwtService,
-            ILogger<AuthController> logger)
+            ILogger<AuthController> logger,
+            IConfiguration configuration)
         {
             _context = context;
             _googleOAuthService = googleOAuthService;
             _jwtService = jwtService;
             _logger = logger;
+            _configuration = configuration;
         }
 
         [HttpPost("google-login")]
@@ -83,8 +88,8 @@ namespace Questionnaire.Server.Controllers
 
                 await _context.SaveChangesAsync();
 
-                // Check if user is admin
-                if (!user.IsAdmin && user.Email != "a.rahimi.at@gmail.com")
+                // Check if user is admin (this is also enforced by JWT claims)
+                if (!user.IsAdmin)
                 {
                     return Forbid("Access denied. Admin privileges required.");
                 }
@@ -101,7 +106,7 @@ namespace Questionnaire.Server.Controllers
                         Email = user.Email,
                         Name = user.Name,
                         Picture = user.Picture,
-                        IsAdmin = user.IsAdmin || user.Email == "a.rahimi.at@gmail.com"
+                        IsAdmin = user.IsAdmin
                     }
                 };
 
@@ -113,14 +118,60 @@ namespace Questionnaire.Server.Controllers
             }
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out var userIdInt))
+                {
+                    return Unauthorized();
+                }
+
+                var user = await _context.Users.FindAsync(userIdInt);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(new UserDto
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Name = user.Name,
+                    Picture = user.Picture,
+                    IsAdmin = user.IsAdmin
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to get current user");
+                return StatusCode(500, "Failed to get user information");
+            }
+        }
+
         private bool IsAdminEmail(string email)
         {
-            // Configure your admin emails here
-            var adminEmails = new[]
+            // Get admin emails from configuration/environment variables
+            var adminEmailsConfig = _configuration["AdminEmails"] ?? Environment.GetEnvironmentVariable("ADMIN_EMAILS");
+            
+            if (string.IsNullOrEmpty(adminEmailsConfig))
             {
-                "ah.rahimy@gmail.com", // Your admin email
-                "admin@yourdomain.com", // Replace with additional admin emails as needed
-            };
+                // Fallback to hardcoded admin emails if no config is provided
+                var defaultAdminEmails = new[]
+                {
+                    "a.rahimi.at@gmail.com", // Your current admin email
+                };
+                return defaultAdminEmails.Contains(email.ToLower());
+            }
+
+            // Parse comma-separated admin emails from configuration
+            var adminEmails = adminEmailsConfig
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(e => e.Trim().ToLower())
+                .ToArray();
 
             return adminEmails.Contains(email.ToLower());
         }

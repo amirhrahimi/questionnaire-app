@@ -50,4 +50,6 @@ WORKDIR /app
 COPY --from=build /app/publish .
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
+ARG ADMIN_EMAILS
+ENV ADMIN_EMAILS=$ADMIN_EMAILS
 ENTRYPOINT ["dotnet", "Questionnaire.Server.dll"]
