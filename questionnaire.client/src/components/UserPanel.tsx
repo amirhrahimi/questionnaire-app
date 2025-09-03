@@ -22,6 +22,7 @@ import {
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import type { Questionnaire, QuestionResponse, SubmitResponse } from '../types';
 import { QuestionType } from '../types';
+import api from '../services/api';
 
 const UserPanel = () => {
     const { id } = useParams<{ id: string }>();
@@ -34,11 +35,10 @@ const UserPanel = () => {
 
     const fetchQuestionnaires = async () => {
         try {
-            const response = await fetch('/api/questionnaire');
-            if (response.ok) {
-                const data = await response.json();
-                setQuestionnaires(data);
-            }
+            console.log('Fetching questionnaires...');
+            const response = await api.get('/questionnaire');
+            console.log('Questionnaires data:', response.data);
+            setQuestionnaires(response.data);
         } catch (error) {
             console.error('Failed to fetch questionnaires:', error);
         }
@@ -57,12 +57,9 @@ const UserPanel = () => {
     const selectQuestionnaire = useCallback(async (id: number) => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/questionnaire/${id}`);
-            if (response.ok) {
-                const data = await response.json();
-                setSelectedQuestionnaire(data);
-                initializeResponses(data);
-            }
+            const response = await api.get(`/questionnaire/${id}`);
+            setSelectedQuestionnaire(response.data);
+            initializeResponses(response.data);
         } catch (error) {
             console.error('Failed to fetch questionnaire:', error);
         } finally {
@@ -130,28 +127,16 @@ const UserPanel = () => {
         };
 
         try {
-            const response = await fetch('/api/questionnaire/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(submitData)
-            });
-
-            if (response.ok) {
-                setSubmitStatus('success');
-                setTimeout(() => {
-                    setSelectedQuestionnaire(null);
-                    setSubmitStatus('idle');
-                    fetchQuestionnaires();
-                }, 2000);
-            } else {
-                const errorData = await response.json();
-                setErrors([errorData.message || 'Failed to submit response']);
-                setSubmitStatus('error');
-            }
-        } catch {
-            setErrors(['Network error. Please try again.']);
+            await api.post('/questionnaire/submit', submitData);
+            setSubmitStatus('success');
+            setTimeout(() => {
+                setSelectedQuestionnaire(null);
+                setSubmitStatus('idle');
+                fetchQuestionnaires();
+            }, 2000);
+        } catch (error: unknown) {
+            const errorMessage = (error as any).response?.data?.message || 'Failed to submit response';
+            setErrors([errorMessage]);
             setSubmitStatus('error');
         }
     };
