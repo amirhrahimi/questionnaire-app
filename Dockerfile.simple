@@ -1,9 +1,16 @@
 # Simple Dockerfile that avoids project reference conflicts
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Install Node.js 20
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+# Install Node.js 20 using more reliable method
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    gnupg \
+    lsb-release \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && node --version \
+    && npm --version
 
 WORKDIR /src
 
