@@ -158,7 +158,23 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
                                 <Typography variant="body2" color="text.secondary" textAlign="center">
                                     Scan this QR code to access the questionnaire directly
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ wordBreak: 'break-all' }}>
+                                <Typography 
+                                    variant="caption" 
+                                    color="primary" 
+                                    textAlign="center" 
+                                    sx={{ 
+                                        wordBreak: 'break-all',
+                                        cursor: 'pointer',
+                                        textDecoration: 'underline',
+                                        '&:hover': {
+                                            textDecoration: 'none'
+                                        }
+                                    }}
+                                    component="a"
+                                    href={`${window.location.origin}/questionnaire/${questionnaireId}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
                                     {`${window.location.origin}/questionnaire/${questionnaireId}`}
                                 </Typography>
                             </>
