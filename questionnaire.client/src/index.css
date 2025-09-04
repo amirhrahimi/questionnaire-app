@@ -21,6 +21,7 @@ html, body {
   margin: 0;
   padding: 0;
   width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 a {
@@ -42,11 +43,35 @@ body {
 #root {
   width: 100%;
   min-height: 100vh;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2.2em;
+  }
+  
+  /* Ensure tables don't cause horizontal overflow */
+  .MuiTableContainer-root {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Better touch targets on mobile */
+  .MuiButton-root {
+    min-height: 44px;
+  }
+  
+  .MuiIconButton-root {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 button {
