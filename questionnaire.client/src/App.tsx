@@ -2,9 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, AppBar, Toolbar, Typography, Box, Button, Avatar } from '@mui/material';
 import { Logout as LogoutIcon } from '@mui/icons-material';
-import AdminPanel from './components/AdminPanel';
-import UserPanel from './components/UserPanel';
-import ProtectedRoute from './components/ProtectedRoute';
+import { AdminPanel, UserPanel, ProtectedRoute } from './components';
 import { AuthProvider } from './contexts/AuthProvider';
 import { useAuth } from './hooks/useAuth';
 

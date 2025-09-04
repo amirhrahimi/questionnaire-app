@@ -7,7 +7,7 @@ import {
     Button,
     Alert
 } from '@mui/material';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 const SimpleLoginPage: React.FC = () => {
     const { login } = useAuth();
