@@ -22,7 +22,7 @@ export interface Question {
 }
 
 export interface Questionnaire {
-    id: number;
+    id: string;
     title: string;
     description?: string;
     createdAt: string;
@@ -58,7 +58,7 @@ export interface QuestionResponse {
 }
 
 export interface SubmitResponse {
-    questionnaireId: number;
+    questionnaireId: string;
     responses: QuestionResponse[];
 }
 
@@ -80,7 +80,7 @@ export interface QuestionResult {
 }
 
 export interface QuestionnaireResult {
-    id: number;
+    id: string;
     title: string;
     description?: string;
     totalResponses: number;

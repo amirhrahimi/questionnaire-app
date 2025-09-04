@@ -4,7 +4,7 @@ namespace Questionnaire.Server.Models
 {
     public class Questionnaire
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         
         [Required]
         [StringLength(200)]

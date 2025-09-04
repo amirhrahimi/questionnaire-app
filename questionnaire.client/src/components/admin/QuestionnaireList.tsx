@@ -36,11 +36,11 @@ interface QuestionnaireListProps {
     loading: boolean;
     onCreateNew: () => void;
     onEdit: (questionnaire: Questionnaire) => void;
-    onViewResults: (id: number) => void;
-    onCopyLink: (id: number) => void;
-    onShowQrCode: (id: number) => void;
-    onToggleStatus: (id: number) => void;
-    onDelete: (id: number) => void;
+    onViewResults: (id: string) => void;
+    onCopyLink: (id: string) => void;
+    onShowQrCode: (id: string) => void;
+    onToggleStatus: (id: string) => void;
+    onDelete: (id: string) => void;
 }
 
 const QuestionnaireList = ({

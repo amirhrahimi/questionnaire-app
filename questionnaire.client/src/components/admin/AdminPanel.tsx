@@ -9,11 +9,11 @@ const AdminPanel = () => {
     const [loading, setLoading] = useState(false);
     const [qrCodeModal, setQrCodeModal] = useState<{
         open: boolean;
-        questionnaireId: number;
+        questionnaireId: string;
         questionnaireTitle: string;
     }>({
         open: false,
-        questionnaireId: 0,
+        questionnaireId: '',
         questionnaireTitle: ''
     });
 
@@ -47,7 +47,7 @@ const AdminPanel = () => {
         }
     };
 
-    const handleUpdateQuestionnaire = async (id: number, questionnaire: CreateQuestionnaire) => {
+    const handleUpdateQuestionnaire = async (id: string, questionnaire: CreateQuestionnaire) => {
         try {
             console.log('Updating questionnaire:', id, questionnaire);
             const response = await api.put(`/api/admin/questionnaires/${id}`, questionnaire);
@@ -59,7 +59,7 @@ const AdminPanel = () => {
         }
     };
 
-    const handleViewResults = async (id: number): Promise<QuestionnaireResult | null> => {
+    const handleViewResults = async (id: string): Promise<QuestionnaireResult | null> => {
         try {
             console.log('Fetching results for questionnaire:', id);
             const response = await api.get(`/api/admin/questionnaires/${id}/results`);
@@ -71,7 +71,7 @@ const AdminPanel = () => {
         }
     };
 
-    const copyQuestionnaireLink = (id: number) => {
+    const copyQuestionnaireLink = (id: string) => {
         const baseUrl = window.location.origin;
         const link = `${baseUrl}/questionnaire/${id}`;
         
@@ -84,7 +84,7 @@ const AdminPanel = () => {
         });
     };
 
-    const showQrCode = (id: number) => {
+    const showQrCode = (id: string) => {
         const questionnaire = questionnaires.find(q => q.id === id);
         setQrCodeModal({
             open: true,
@@ -96,15 +96,15 @@ const AdminPanel = () => {
     const closeQrCodeModal = () => {
         setQrCodeModal({
             open: false,
-            questionnaireId: 0,
+            questionnaireId: '',
             questionnaireTitle: ''
         });
     };
 
-    const toggleQuestionnaireStatus = async (id: number) => {
+    const toggleQuestionnaireStatus = async (id: string) => {
         try {
             console.log('Toggling status for questionnaire:', id);
-            await api.patch(`/api/admin/questionnaires/${id}/toggle`);
+            await api.put(`/api/admin/questionnaires/${id}/toggle`);
             fetchQuestionnaires();
         } catch (error) {
             console.error('Failed to toggle questionnaire status:', error);
@@ -112,7 +112,7 @@ const AdminPanel = () => {
         }
     };
 
-    const deleteQuestionnaire = async (id: number) => {
+    const deleteQuestionnaire = async (id: string) => {
         if (window.confirm('Are you sure you want to delete this questionnaire? This action cannot be undone.')) {
             try {
                 console.log('Deleting questionnaire:', id);

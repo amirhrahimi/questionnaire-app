@@ -4,7 +4,7 @@ namespace Questionnaire.Server.DTOs
 {
     public class SubmitResponseDto
     {
-        public int QuestionnaireId { get; set; }
+        public Guid QuestionnaireId { get; set; }
         public List<QuestionResponseDto> Responses { get; set; } = new();
     }
 
@@ -25,7 +25,7 @@ namespace Questionnaire.Server.DTOs
 
     public class QuestionnaireResultDto
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Description { get; set; }
         public int TotalResponses { get; set; }

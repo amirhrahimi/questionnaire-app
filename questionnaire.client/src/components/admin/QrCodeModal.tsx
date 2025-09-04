@@ -19,7 +19,7 @@ import QRCode from 'qrcode';
 interface QrCodeModalProps {
     open: boolean;
     onClose: () => void;
-    questionnaireId: number;
+    questionnaireId: string;
     questionnaireTitle?: string;
 }
 
@@ -111,6 +111,7 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
                 }}>
                     <Typography 
                         variant="h6" 
+                        component="span"
                         sx={{ 
                             flex: 1,
                             wordBreak: 'break-word',

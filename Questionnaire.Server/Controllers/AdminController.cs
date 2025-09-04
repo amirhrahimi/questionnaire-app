@@ -56,7 +56,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpGet("questionnaires/{id}")]
-        public async Task<ActionResult<QuestionnaireDto>> GetQuestionnaire(int id)
+        public async Task<ActionResult<QuestionnaireDto>> GetQuestionnaire(Guid id)
         {
             var questionnaire = await _context.Questionnaires
                 .Include(q => q.Questions)
@@ -148,7 +148,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpPut("questionnaires/{id}")]
-        public async Task<ActionResult<QuestionnaireDto>> UpdateQuestionnaire(int id, CreateQuestionnaireDto updateDto)
+        public async Task<ActionResult<QuestionnaireDto>> UpdateQuestionnaire(Guid id, CreateQuestionnaireDto updateDto)
         {
             var existingQuestionnaire = await _context.Questionnaires
                 .Include(q => q.Questions)
@@ -205,7 +205,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpPut("questionnaires/{id}/toggle")]
-        public async Task<IActionResult> ToggleQuestionnaireStatus(int id)
+        public async Task<IActionResult> ToggleQuestionnaireStatus(Guid id)
         {
             var questionnaire = await _context.Questionnaires.FindAsync(id);
             if (questionnaire == null)
@@ -220,7 +220,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpDelete("questionnaires/{id}")]
-        public async Task<IActionResult> DeleteQuestionnaire(int id)
+        public async Task<IActionResult> DeleteQuestionnaire(Guid id)
         {
             var questionnaire = await _context.Questionnaires.FindAsync(id);
             if (questionnaire == null)
@@ -235,7 +235,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpGet("questionnaires/{id}/results")]
-        public async Task<ActionResult<QuestionnaireResultDto>> GetQuestionnaireResults(int id)
+        public async Task<ActionResult<QuestionnaireResultDto>> GetQuestionnaireResults(Guid id)
         {
             var questionnaire = await _context.Questionnaires
                 .Include(q => q.Questions)

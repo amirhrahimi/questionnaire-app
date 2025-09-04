@@ -38,7 +38,7 @@ const UserPanel = () => {
         setResponses(initialResponses);
     }, []);
 
-    const selectQuestionnaire = useCallback(async (questionnaireId: number) => {
+    const selectQuestionnaire = useCallback(async (questionnaireId: string) => {
         // Always navigate to the questionnaire URL to ensure URL consistency
         navigate(`/questionnaire/${questionnaireId}`);
     }, [navigate]);

@@ -9,12 +9,12 @@ interface AdminRouterProps {
     questionnaires: Questionnaire[];
     loading: boolean;
     onCreateQuestionnaire: (questionnaire: CreateQuestionnaire) => Promise<void>;
-    onUpdateQuestionnaire: (id: number, questionnaire: CreateQuestionnaire) => Promise<void>;
-    onViewResults: (id: number) => Promise<QuestionnaireResult | null>;
-    onCopyLink: (id: number) => void;
-    onShowQrCode: (id: number) => void;
-    onToggleStatus: (id: number) => Promise<void>;
-    onDelete: (id: number) => Promise<void>;
+    onUpdateQuestionnaire: (id: string, questionnaire: CreateQuestionnaire) => Promise<void>;
+    onViewResults: (id: string) => Promise<QuestionnaireResult | null>;
+    onCopyLink: (id: string) => void;
+    onShowQrCode: (id: string) => void;
+    onToggleStatus: (id: string) => Promise<void>;
+    onDelete: (id: string) => Promise<void>;
 }
 
 const AdminRouter = ({
@@ -58,12 +58,12 @@ const AdminRouter = ({
     // Handle questionnaire update
     const handleUpdateQuestionnaire = async (questionnaire: CreateQuestionnaire) => {
         if (!id) return;
-        await onUpdateQuestionnaire(parseInt(id), questionnaire);
+        await onUpdateQuestionnaire(id, questionnaire);
         navigate('/admin');
     };
 
     // Handle viewing results
-    const handleViewResults = (questionnaireId: number) => {
+    const handleViewResults = (questionnaireId: string) => {
         navigate(`/admin/results/${questionnaireId}`);
     };
 
@@ -80,7 +80,7 @@ const AdminRouter = ({
     // Find questionnaire for editing
     const getQuestionnaireForEdit = () => {
         if (!id) return null;
-        return questionnaires.find(q => q.id === parseInt(id)) || null;
+        return questionnaires.find(q => q.id === id) || null;
     };
 
     // Render based on current route
@@ -114,7 +114,7 @@ const AdminRouter = ({
         case 'results':
             return (
                 <ResultsViewWrapper
-                    questionnaireId={id ? parseInt(id) : 0}
+                    questionnaireId={id || ''}
                     onViewResults={onViewResults}
                     onBack={handleCancel}
                 />
@@ -140,8 +140,8 @@ const AdminRouter = ({
 
 // Wrapper component for results view that handles async data loading
 interface ResultsViewWrapperProps {
-    questionnaireId: number;
-    onViewResults: (id: number) => Promise<QuestionnaireResult | null>;
+    questionnaireId: string;
+    onViewResults: (id: string) => Promise<QuestionnaireResult | null>;
     onBack: () => void;
 }
 

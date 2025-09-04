@@ -10,7 +10,7 @@ import QuestionnaireCard from './QuestionnaireCard';
 interface QuestionnaireGridProps {
     questionnaires: Questionnaire[];
     loading: boolean;
-    onSelectQuestionnaire: (id: number) => void;
+    onSelectQuestionnaire: (id: string) => void;
 }
 
 const QuestionnaireGrid = ({ questionnaires, loading, onSelectQuestionnaire }: QuestionnaireGridProps) => {

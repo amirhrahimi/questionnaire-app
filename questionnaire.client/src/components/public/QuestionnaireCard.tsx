@@ -11,7 +11,7 @@ import type { Questionnaire } from '../../types';
 
 interface QuestionnaireCardProps {
     questionnaire: Questionnaire;
-    onSelect: (id: number) => void;
+    onSelect: (id: string) => void;
 }
 
 const QuestionnaireCard = ({ questionnaire, onSelect }: QuestionnaireCardProps) => {
