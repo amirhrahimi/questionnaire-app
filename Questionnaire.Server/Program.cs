@@ -19,8 +19,20 @@ namespace Questionnaire.Server
             if (builder.Environment.IsDevelopment())
             {
                 // Use InMemory database for local development
-                builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
-                    options.UseInMemoryDatabase("QuestionnaireDb"));
+                //builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                //    options.UseInMemoryDatabase("QuestionnaireDb"));
+
+                var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") ??
+                                       builder.Configuration.GetConnectionString("DefaultConnection");
+
+                if (!string.IsNullOrEmpty(connectionString))
+                {
+                    // Railway provides DATABASE_URL in a specific format
+                    connectionString = ConvertRailwayConnectionString(connectionString);
+
+                    builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                        options.UseNpgsql(connectionString));
+                }
             }
             else
             {
@@ -87,8 +99,8 @@ namespace Questionnaire.Server
             var app = builder.Build();
 
             // Auto-migrate database in production (only for relational databases)
-            if (!app.Environment.IsDevelopment())
-            {
+            //if (!app.Environment.IsDevelopment())
+            //{
                 using (var scope = app.Services.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetRequiredService<QuestionnaireDbContext>();
@@ -116,7 +128,7 @@ namespace Questionnaire.Server
                         throw;
                     }
                 }
-            }
+            //}
 
             // Configure for Railway deployment
             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
