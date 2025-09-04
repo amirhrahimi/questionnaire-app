@@ -155,7 +155,7 @@ namespace Questionnaire.Server.Controllers
         private bool IsAdminEmail(string email)
         {
             // Get admin emails from configuration/environment variables
-            var adminEmailsConfig = _configuration["AdminEmails"] ?? Environment.GetEnvironmentVariable("ADMIN_EMAILS");
+            var adminEmailsConfig = _configuration["AdminEmails"];
             
             if (string.IsNullOrEmpty(adminEmailsConfig))
             {

@@ -14,7 +14,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
-        "PORT": "7012"
+        "PORT": "7012",
+        "AdminEmails": "test@gmail.com"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7012;http://localhost:5253"
