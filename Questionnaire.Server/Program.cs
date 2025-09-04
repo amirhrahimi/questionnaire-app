@@ -94,7 +94,15 @@ namespace Questionnaire.Server
             
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Questionnaire API",
+                    Version = "v1",
+                    Description = "API for managing questionnaires and responses"
+                });
+            });
 
             var app = builder.Build();
 
@@ -149,7 +157,11 @@ namespace Questionnaire.Server
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Questionnaire API v1");
+                    c.RoutePrefix = "swagger";
+                });
             }
 
             // Only redirect to HTTPS in development (Railway handles SSL)
