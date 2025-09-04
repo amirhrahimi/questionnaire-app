@@ -54,7 +54,7 @@ const AdminPanel = () => {
 
     const copyQuestionnaireLink = (id: number) => {
         const baseUrl = window.location.origin;
-        const link = `${baseUrl}/${id}`;
+        const link = `${baseUrl}/questionnaire/${id}`;
         
         navigator.clipboard.writeText(link).then(() => {
             console.log('Link copied to clipboard:', link);
