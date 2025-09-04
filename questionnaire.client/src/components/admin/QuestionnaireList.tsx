@@ -11,18 +11,13 @@ import {
     Paper,
     Chip,
     IconButton,
-    ButtonGroup,
     Tooltip,
     CircularProgress,
     Card,
     CardContent,
     Stack,
     useMediaQuery,
-    useTheme,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions
+    useTheme
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -31,7 +26,8 @@ import {
     ToggleOff as DeactivateIcon,
     ToggleOn as ActivateIcon,
     Delete as DeleteIcon,
-    QrCode as QrCodeIcon
+    QrCode as QrCodeIcon,
+    Edit as EditIcon
 } from '@mui/icons-material';
 import type { Questionnaire } from '../../types';
 
@@ -39,6 +35,7 @@ interface QuestionnaireListProps {
     questionnaires: Questionnaire[];
     loading: boolean;
     onCreateNew: () => void;
+    onEdit: (questionnaire: Questionnaire) => void;
     onViewResults: (id: number) => void;
     onCopyLink: (id: number) => void;
     onShowQrCode: (id: number) => void;
@@ -50,6 +47,7 @@ const QuestionnaireList = ({
     questionnaires,
     loading,
     onCreateNew,
+    onEdit,
     onViewResults,
     onCopyLink,
     onShowQrCode,
@@ -95,6 +93,24 @@ const QuestionnaireList = ({
                 </Box>
                 
                 <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                    <Tooltip title="Edit">
+                        <IconButton
+                            color="primary"
+                            size="small"
+                            onClick={() => onEdit(q)}
+                            sx={{
+                                border: '1px solid',
+                                borderColor: 'primary.main',
+                                borderRadius: 1,
+                                '&:hover': {
+                                    backgroundColor: 'primary.50',
+                                    borderColor: 'primary.dark'
+                                }
+                            }}
+                        >
+                            <EditIcon />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title="View Results">
                         <span>
                             <IconButton
@@ -207,7 +223,7 @@ const QuestionnaireList = ({
                         <TableCell>Responses</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell>Created</TableCell>
-                        <TableCell sx={{ minWidth: 500 }}>Actions</TableCell>
+                        <TableCell sx={{ minWidth: 610, width: 610 }}>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -229,7 +245,7 @@ const QuestionnaireList = ({
                             </TableCell>
                             <TableCell>{new Date(q.createdAt).toLocaleDateString()}</TableCell>
                             <TableCell>
-                                <ButtonGroup size="small" variant="outlined">
+                                <Stack direction="row" spacing={1}>
                                     <Tooltip title="View Results">
                                         <span>
                                             <Button 
@@ -237,6 +253,8 @@ const QuestionnaireList = ({
                                                 disabled={(q.responseCount || 0) === 0}
                                                 startIcon={<VisibilityIcon />}
                                                 color="primary"
+                                                variant="outlined"
+                                                size="small"
                                             >
                                                 Results
                                             </Button>
@@ -247,6 +265,8 @@ const QuestionnaireList = ({
                                             onClick={() => onCopyLink(q.id)}
                                             color="success"
                                             startIcon={<LinkIcon />}
+                                            variant="outlined"
+                                            size="small"
                                         >
                                             Copy Link
                                         </Button>
@@ -256,6 +276,8 @@ const QuestionnaireList = ({
                                             onClick={() => onShowQrCode(q.id)}
                                             color="info"
                                             startIcon={<QrCodeIcon />}
+                                            variant="outlined"
+                                            size="small"
                                         >
                                             QR Code
                                         </Button>
@@ -265,8 +287,21 @@ const QuestionnaireList = ({
                                             onClick={() => onToggleStatus(q.id)}
                                             color={q.isActive ? 'warning' : 'success'}
                                             startIcon={q.isActive ? <DeactivateIcon /> : <ActivateIcon />}
+                                            variant="outlined"
+                                            size="small"
                                         >
                                             {q.isActive ? 'Deactivate' : 'Activate'}
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip title="Edit">
+                                        <Button 
+                                            onClick={() => onEdit(q)}
+                                            color="primary"
+                                            startIcon={<EditIcon />}
+                                            variant="outlined"
+                                            size="small"
+                                        >
+                                            Edit
                                         </Button>
                                     </Tooltip>
                                     <Tooltip title="Delete">
@@ -274,11 +309,13 @@ const QuestionnaireList = ({
                                             onClick={() => onDelete(q.id)}
                                             color="error"
                                             startIcon={<DeleteIcon />}
+                                            variant="outlined"
+                                            size="small"
                                         >
                                             Delete
                                         </Button>
                                     </Tooltip>
-                                </ButtonGroup>
+                                </Stack>
                             </TableCell>
                         </TableRow>
                     ))}

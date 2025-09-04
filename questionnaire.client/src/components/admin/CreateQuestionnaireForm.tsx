@@ -19,18 +19,35 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon
 } from '@mui/icons-material';
-import type { CreateQuestionnaire, CreateQuestion } from '../../types';
+import type { CreateQuestionnaire, CreateQuestion, Questionnaire, Question, QuestionOption } from '../../types';
 import { QuestionType } from '../../types';
 
 interface CreateQuestionnaireFormProps {
+    questionnaire?: Questionnaire;
     onSave: (questionnaire: CreateQuestionnaire) => void;
     onCancel: () => void;
 }
 
-const CreateQuestionnaireForm = ({ onSave, onCancel }: CreateQuestionnaireFormProps) => {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [questions, setQuestions] = useState<CreateQuestion[]>([]);
+const CreateQuestionnaireForm = ({ questionnaire, onSave, onCancel }: CreateQuestionnaireFormProps) => {
+    // Helper function to convert Questionnaire questions to CreateQuestion format
+    const convertToCreateQuestions = (questions: Question[]): CreateQuestion[] => {
+        return questions?.map(q => ({
+            text: q.text,
+            type: q.type,
+            isRequired: q.isRequired,
+            order: q.order,
+            options: q.options?.map((opt: QuestionOption) => ({
+                text: opt.text,
+                order: opt.order
+            })) || []
+        })) || [];
+    };
+
+    const [title, setTitle] = useState(questionnaire?.title || '');
+    const [description, setDescription] = useState(questionnaire?.description || '');
+    const [questions, setQuestions] = useState<CreateQuestion[]>(
+        questionnaire ? convertToCreateQuestions(questionnaire.questions) : []
+    );
 
     const addQuestion = () => {
         const newQuestion: CreateQuestion = {
@@ -129,7 +146,7 @@ const CreateQuestionnaireForm = ({ onSave, onCancel }: CreateQuestionnaireFormPr
             <Paper sx={{ p: 4 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                     <Typography variant="h4" component="h2">
-                        Create New Questionnaire
+                        {questionnaire ? 'Edit Questionnaire' : 'Create New Questionnaire'}
                     </Typography>
                     <Button variant="outlined" onClick={onCancel}>
                         Cancel
@@ -281,7 +298,7 @@ const CreateQuestionnaireForm = ({ onSave, onCancel }: CreateQuestionnaireFormPr
                             Cancel
                         </Button>
                         <Button type="submit" variant="contained" size="large">
-                            Create Questionnaire
+                            {questionnaire ? 'Update Questionnaire' : 'Create Questionnaire'}
                         </Button>
                     </Box>
                 </Box>

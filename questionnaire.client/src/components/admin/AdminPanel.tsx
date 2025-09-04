@@ -9,6 +9,7 @@ import QrCodeModal from './QrCodeModal';
 const AdminPanel = () => {
     const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [editingQuestionnaire, setEditingQuestionnaire] = useState<Questionnaire | null>(null);
     const [selectedResults, setSelectedResults] = useState<QuestionnaireResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [qrCodeModal, setQrCodeModal] = useState<{
@@ -45,9 +46,29 @@ const AdminPanel = () => {
             const response = await api.post('/api/admin/questionnaires', questionnaire);
             console.log('Created questionnaire:', response.data);
             setShowCreateForm(false);
+            setEditingQuestionnaire(null);
             fetchQuestionnaires();
         } catch (error) {
             console.error('Failed to create questionnaire:', error);
+        }
+    };
+
+    const handleEditQuestionnaire = (questionnaire: Questionnaire) => {
+        setEditingQuestionnaire(questionnaire);
+        setShowCreateForm(false);
+    };
+
+    const handleUpdateQuestionnaire = async (questionnaire: CreateQuestionnaire) => {
+        if (!editingQuestionnaire) return;
+        
+        try {
+            console.log('Updating questionnaire:', editingQuestionnaire.id, questionnaire);
+            const response = await api.put(`/api/admin/questionnaires/${editingQuestionnaire.id}`, questionnaire);
+            console.log('Updated questionnaire:', response.data);
+            setEditingQuestionnaire(null);
+            fetchQuestionnaires();
+        } catch (error) {
+            console.error('Failed to update questionnaire:', error);
         }
     };
 
@@ -119,6 +140,17 @@ const AdminPanel = () => {
         return <ResultsView results={selectedResults} onBack={() => setSelectedResults(null)} />;
     }
 
+    // Show edit form if editing
+    if (editingQuestionnaire) {
+        return (
+            <CreateQuestionnaireForm
+                questionnaire={editingQuestionnaire}
+                onSave={handleUpdateQuestionnaire}
+                onCancel={() => setEditingQuestionnaire(null)}
+            />
+        );
+    }
+
     // Show create form if requested
     if (showCreateForm) {
         return (
@@ -136,6 +168,7 @@ const AdminPanel = () => {
                 questionnaires={questionnaires}
                 loading={loading}
                 onCreateNew={() => setShowCreateForm(true)}
+                onEdit={handleEditQuestionnaire}
                 onViewResults={viewResults}
                 onCopyLink={copyQuestionnaireLink}
                 onShowQrCode={showQrCode}
