@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import type { Questionnaire, QuestionResponse, SubmitResponse } from '../../types';
 import { QuestionType } from '../../types';
 import api from '../../services/api';
@@ -8,6 +8,7 @@ import QuestionnaireForm from './QuestionnaireForm';
 
 const UserPanel = () => {
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
     const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
     const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<Questionnaire | null>(null);
     const [responses, setResponses] = useState<QuestionResponse[]>([]);
@@ -38,29 +39,40 @@ const UserPanel = () => {
     }, []);
 
     const selectQuestionnaire = useCallback(async (questionnaireId: number) => {
-        setLoading(true);
-        try {
-            const response = await api.get(`/api/questionnaire/${questionnaireId}`);
-            setSelectedQuestionnaire(response.data);
-            initializeResponses(response.data);
-            setSubmitStatus('idle');
-            setErrors([]);
-        } catch (error) {
-            console.error('Failed to fetch questionnaire:', error);
-        } finally {
-            setLoading(false);
-        }
-    }, [initializeResponses]);
+        // Always navigate to the questionnaire URL to ensure URL consistency
+        navigate(`/questionnaire/${questionnaireId}`);
+    }, [navigate]);
 
+    // Load questionnaire data when URL changes
     useEffect(() => {
         if (id) {
             // If we have an ID in the URL, load that specific questionnaire
-            selectQuestionnaire(parseInt(id));
+            const loadQuestionnaire = async () => {
+                setLoading(true);
+                try {
+                    const response = await api.get(`/api/questionnaire/${id}`);
+                    setSelectedQuestionnaire(response.data);
+                    initializeResponses(response.data);
+                    setSubmitStatus('idle');
+                    setErrors([]);
+                } catch (error) {
+                    console.error('Failed to fetch questionnaire:', error);
+                    // If questionnaire not found, redirect to main page
+                    navigate('/');
+                } finally {
+                    setLoading(false);
+                }
+            };
+            loadQuestionnaire();
         } else {
-            // If no ID, show the list of available questionnaires
+            // If no ID, clear selected questionnaire and show the list
+            setSelectedQuestionnaire(null);
+            setResponses([]);
+            setErrors([]);
+            setSubmitStatus('idle');
             fetchQuestionnaires();
         }
-    }, [id, selectQuestionnaire]);
+    }, [id, navigate, initializeResponses]);
 
     const updateResponse = (questionId: number, update: Partial<QuestionResponse>) => {
         setResponses(prev => prev.map(r => 
@@ -139,33 +151,35 @@ const UserPanel = () => {
     };
 
     const handleBack = () => {
-        setSelectedQuestionnaire(null);
-        setResponses([]);
-        setErrors([]);
-        setSubmitStatus('idle');
-        
-        // If we came from a direct link, go back to the questionnaire list
-        if (id) {
-            window.history.pushState({}, '', '/');
-        }
+        // Simply navigate back to the main questionnaire list
+        navigate('/');
     };
 
-    // Show selected questionnaire form
-    if (selectedQuestionnaire) {
-        return (
-            <QuestionnaireForm
-                questionnaire={selectedQuestionnaire}
-                responses={responses}
-                errors={errors}
-                submitStatus={submitStatus}
-                onBack={handleBack}
-                onUpdateResponse={updateResponse}
-                onSubmit={submitResponse}
-            />
-        );
+    // Show selected questionnaire form if we have an ID in the URL
+    if (id) {
+        if (loading) {
+            return <div>Loading questionnaire...</div>;
+        }
+        
+        if (selectedQuestionnaire) {
+            return (
+                <QuestionnaireForm
+                    questionnaire={selectedQuestionnaire}
+                    responses={responses}
+                    errors={errors}
+                    submitStatus={submitStatus}
+                    onBack={handleBack}
+                    onUpdateResponse={updateResponse}
+                    onSubmit={submitResponse}
+                />
+            );
+        }
+        
+        // If we have an ID but no questionnaire (e.g., not found), show loading or redirect
+        return <div>Loading questionnaire...</div>;
     }
 
-    // Show questionnaire grid
+    // Show questionnaire grid when no ID in URL
     return (
         <QuestionnaireGrid
             questionnaires={questionnaires}

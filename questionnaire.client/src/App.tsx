@@ -164,10 +164,38 @@ function App() {
                             maxWidth: '100vw' // Prevent content from exceeding viewport width
                         }}>
                             <Routes>
+                                {/* User Routes */}
                                 <Route path="/" element={<UserPanel />} />
                                 <Route path="/questionnaire/:id" element={<UserPanel />} />
+                                <Route path="/questionnaires" element={<UserPanel />} />
+                                
+                                {/* Admin Routes */}
                                 <Route 
                                     path="/admin" 
+                                    element={
+                                        <ProtectedRoute>
+                                            <AdminPanel />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/create" 
+                                    element={
+                                        <ProtectedRoute>
+                                            <AdminPanel />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/edit/:id" 
+                                    element={
+                                        <ProtectedRoute>
+                                            <AdminPanel />
+                                        </ProtectedRoute>
+                                    } 
+                                />
+                                <Route 
+                                    path="/admin/results/:id" 
                                     element={
                                         <ProtectedRoute>
                                             <AdminPanel />

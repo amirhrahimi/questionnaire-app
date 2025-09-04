@@ -1,16 +1,11 @@
 import { useState, useEffect } from 'react';
 import type { Questionnaire, CreateQuestionnaire, QuestionnaireResult } from '../../types';
 import api from '../../services/api';
-import QuestionnaireList from './QuestionnaireList';
-import CreateQuestionnaireForm from './CreateQuestionnaireForm';
-import ResultsView from './ResultsView';
+import AdminRouter from './AdminRouter';
 import QrCodeModal from './QrCodeModal';
 
 const AdminPanel = () => {
     const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
-    const [showCreateForm, setShowCreateForm] = useState(false);
-    const [editingQuestionnaire, setEditingQuestionnaire] = useState<Questionnaire | null>(null);
-    const [selectedResults, setSelectedResults] = useState<QuestionnaireResult | null>(null);
     const [loading, setLoading] = useState(false);
     const [qrCodeModal, setQrCodeModal] = useState<{
         open: boolean;
@@ -21,10 +16,6 @@ const AdminPanel = () => {
         questionnaireId: 0,
         questionnaireTitle: ''
     });
-
-    useEffect(() => {
-        fetchQuestionnaires();
-    }, []);
 
     const fetchQuestionnaires = async () => {
         try {
@@ -40,46 +31,43 @@ const AdminPanel = () => {
         }
     };
 
+    useEffect(() => {
+        fetchQuestionnaires();
+    }, []);
+
     const handleCreateQuestionnaire = async (questionnaire: CreateQuestionnaire) => {
         try {
             console.log('Creating questionnaire:', questionnaire);
             const response = await api.post('/api/admin/questionnaires', questionnaire);
             console.log('Created questionnaire:', response.data);
-            setShowCreateForm(false);
-            setEditingQuestionnaire(null);
             fetchQuestionnaires();
         } catch (error) {
             console.error('Failed to create questionnaire:', error);
+            throw error;
         }
     };
 
-    const handleEditQuestionnaire = (questionnaire: Questionnaire) => {
-        setEditingQuestionnaire(questionnaire);
-        setShowCreateForm(false);
-    };
-
-    const handleUpdateQuestionnaire = async (questionnaire: CreateQuestionnaire) => {
-        if (!editingQuestionnaire) return;
-        
+    const handleUpdateQuestionnaire = async (id: number, questionnaire: CreateQuestionnaire) => {
         try {
-            console.log('Updating questionnaire:', editingQuestionnaire.id, questionnaire);
-            const response = await api.put(`/api/admin/questionnaires/${editingQuestionnaire.id}`, questionnaire);
+            console.log('Updating questionnaire:', id, questionnaire);
+            const response = await api.put(`/api/admin/questionnaires/${id}`, questionnaire);
             console.log('Updated questionnaire:', response.data);
-            setEditingQuestionnaire(null);
             fetchQuestionnaires();
         } catch (error) {
             console.error('Failed to update questionnaire:', error);
+            throw error;
         }
     };
 
-    const viewResults = async (id: number) => {
+    const handleViewResults = async (id: number): Promise<QuestionnaireResult | null> => {
         try {
             console.log('Fetching results for questionnaire:', id);
             const response = await api.get(`/api/admin/questionnaires/${id}/results`);
             console.log('Results data:', response.data);
-            setSelectedResults(response.data);
+            return response.data;
         } catch (error) {
             console.error('Failed to fetch results:', error);
+            throw error;
         }
     };
 
@@ -120,6 +108,7 @@ const AdminPanel = () => {
             fetchQuestionnaires();
         } catch (error) {
             console.error('Failed to toggle questionnaire status:', error);
+            throw error;
         }
     };
 
@@ -131,45 +120,19 @@ const AdminPanel = () => {
                 fetchQuestionnaires();
             } catch (error) {
                 console.error('Failed to delete questionnaire:', error);
+                throw error;
             }
         }
     };
 
-    // Show results view if selected
-    if (selectedResults) {
-        return <ResultsView results={selectedResults} onBack={() => setSelectedResults(null)} />;
-    }
-
-    // Show edit form if editing
-    if (editingQuestionnaire) {
-        return (
-            <CreateQuestionnaireForm
-                questionnaire={editingQuestionnaire}
-                onSave={handleUpdateQuestionnaire}
-                onCancel={() => setEditingQuestionnaire(null)}
-            />
-        );
-    }
-
-    // Show create form if requested
-    if (showCreateForm) {
-        return (
-            <CreateQuestionnaireForm
-                onSave={handleCreateQuestionnaire}
-                onCancel={() => setShowCreateForm(false)}
-            />
-        );
-    }
-
-    // Show main questionnaire list
     return (
         <>
-            <QuestionnaireList
+            <AdminRouter
                 questionnaires={questionnaires}
                 loading={loading}
-                onCreateNew={() => setShowCreateForm(true)}
-                onEdit={handleEditQuestionnaire}
-                onViewResults={viewResults}
+                onCreateQuestionnaire={handleCreateQuestionnaire}
+                onUpdateQuestionnaire={handleUpdateQuestionnaire}
+                onViewResults={handleViewResults}
                 onCopyLink={copyQuestionnaireLink}
                 onShowQrCode={showQrCode}
                 onToggleStatus={toggleQuestionnaireStatus}
