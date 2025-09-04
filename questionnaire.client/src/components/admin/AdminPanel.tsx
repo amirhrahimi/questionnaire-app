@@ -4,12 +4,22 @@ import api from '../../services/api';
 import QuestionnaireList from './QuestionnaireList';
 import CreateQuestionnaireForm from './CreateQuestionnaireForm';
 import ResultsView from './ResultsView';
+import QrCodeModal from './QrCodeModal';
 
 const AdminPanel = () => {
     const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [selectedResults, setSelectedResults] = useState<QuestionnaireResult | null>(null);
     const [loading, setLoading] = useState(false);
+    const [qrCodeModal, setQrCodeModal] = useState<{
+        open: boolean;
+        questionnaireId: number;
+        questionnaireTitle: string;
+    }>({
+        open: false,
+        questionnaireId: 0,
+        questionnaireTitle: ''
+    });
 
     useEffect(() => {
         fetchQuestionnaires();
@@ -65,6 +75,23 @@ const AdminPanel = () => {
         });
     };
 
+    const showQrCode = (id: number) => {
+        const questionnaire = questionnaires.find(q => q.id === id);
+        setQrCodeModal({
+            open: true,
+            questionnaireId: id,
+            questionnaireTitle: questionnaire?.title || `Questionnaire #${id}`
+        });
+    };
+
+    const closeQrCodeModal = () => {
+        setQrCodeModal({
+            open: false,
+            questionnaireId: 0,
+            questionnaireTitle: ''
+        });
+    };
+
     const toggleQuestionnaireStatus = async (id: number) => {
         try {
             console.log('Toggling status for questionnaire:', id);
@@ -104,15 +131,25 @@ const AdminPanel = () => {
 
     // Show main questionnaire list
     return (
-        <QuestionnaireList
-            questionnaires={questionnaires}
-            loading={loading}
-            onCreateNew={() => setShowCreateForm(true)}
-            onViewResults={viewResults}
-            onCopyLink={copyQuestionnaireLink}
-            onToggleStatus={toggleQuestionnaireStatus}
-            onDelete={deleteQuestionnaire}
-        />
+        <>
+            <QuestionnaireList
+                questionnaires={questionnaires}
+                loading={loading}
+                onCreateNew={() => setShowCreateForm(true)}
+                onViewResults={viewResults}
+                onCopyLink={copyQuestionnaireLink}
+                onShowQrCode={showQrCode}
+                onToggleStatus={toggleQuestionnaireStatus}
+                onDelete={deleteQuestionnaire}
+            />
+            
+            <QrCodeModal
+                open={qrCodeModal.open}
+                onClose={closeQrCodeModal}
+                questionnaireId={qrCodeModal.questionnaireId}
+                questionnaireTitle={qrCodeModal.questionnaireTitle}
+            />
+        </>
     );
 };
 

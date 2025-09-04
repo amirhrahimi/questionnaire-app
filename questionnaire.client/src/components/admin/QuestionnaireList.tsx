@@ -18,7 +18,11 @@ import {
     CardContent,
     Stack,
     useMediaQuery,
-    useTheme
+    useTheme,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions
 } from '@mui/material';
 import {
     Add as AddIcon,
@@ -26,7 +30,8 @@ import {
     Link as LinkIcon,
     ToggleOff as DeactivateIcon,
     ToggleOn as ActivateIcon,
-    Delete as DeleteIcon
+    Delete as DeleteIcon,
+    QrCode as QrCodeIcon
 } from '@mui/icons-material';
 import type { Questionnaire } from '../../types';
 
@@ -36,6 +41,7 @@ interface QuestionnaireListProps {
     onCreateNew: () => void;
     onViewResults: (id: number) => void;
     onCopyLink: (id: number) => void;
+    onShowQrCode: (id: number) => void;
     onToggleStatus: (id: number) => void;
     onDelete: (id: number) => void;
 }
@@ -46,6 +52,7 @@ const QuestionnaireList = ({
     onCreateNew,
     onViewResults,
     onCopyLink,
+    onShowQrCode,
     onToggleStatus,
     onDelete
 }: QuestionnaireListProps) => {
@@ -131,6 +138,24 @@ const QuestionnaireList = ({
                             <LinkIcon />
                         </IconButton>
                     </Tooltip>
+                    <Tooltip title="Show QR Code">
+                        <IconButton
+                            color="info"
+                            size="small"
+                            onClick={() => onShowQrCode(q.id)}
+                            sx={{
+                                border: '1px solid',
+                                borderColor: 'info.main',
+                                borderRadius: 1,
+                                '&:hover': {
+                                    backgroundColor: 'info.50',
+                                    borderColor: 'info.dark'
+                                }
+                            }}
+                        >
+                            <QrCodeIcon />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title={q.isActive ? 'Deactivate' : 'Activate'}>
                         <IconButton
                             color={q.isActive ? 'warning' : 'success'}
@@ -178,12 +203,11 @@ const QuestionnaireList = ({
                 <TableHead>
                     <TableRow>
                         <TableCell>Title</TableCell>
-                        <TableCell>Description</TableCell>
                         <TableCell>Questions</TableCell>
                         <TableCell>Responses</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell>Created</TableCell>
-                        <TableCell>Actions</TableCell>
+                        <TableCell sx={{ minWidth: 500 }}>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -192,11 +216,6 @@ const QuestionnaireList = ({
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight="medium">
                                     {q.title}
-                                </Typography>
-                            </TableCell>
-                            <TableCell sx={{ maxWidth: 200 }}>
-                                <Typography variant="body2" noWrap>
-                                    {q.description || '-'}
                                 </Typography>
                             </TableCell>
                             <TableCell>{q.questions?.length || 0}</TableCell>
@@ -230,6 +249,15 @@ const QuestionnaireList = ({
                                             startIcon={<LinkIcon />}
                                         >
                                             Copy Link
+                                        </Button>
+                                    </Tooltip>
+                                    <Tooltip title="Show QR Code">
+                                        <Button 
+                                            onClick={() => onShowQrCode(q.id)}
+                                            color="info"
+                                            startIcon={<QrCodeIcon />}
+                                        >
+                                            QR Code
                                         </Button>
                                     </Tooltip>
                                     <Tooltip title={q.isActive ? 'Deactivate' : 'Activate'}>
