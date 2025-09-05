@@ -10,15 +10,12 @@ const LinkedInSvg = styled('svg')(() => ({
 }));
 
 export function Footer() {
-  const linkedInUrl = import.meta.env.VITE_LINKEDIN_URL as string | undefined;
-  if (!linkedInUrl && import.meta.env.DEV) {
-    console.warn('[Footer] VITE_LINKEDIN_URL not set. Set it in .env to activate link.');
-  }
+  const linkedInUrl = "https://www.linkedin.com/in/amir-h-rahimi";
   return (
     <Box component="footer" sx={{ mt: 'auto', py: 2, textAlign: 'center', opacity: 0.9 }}>
       <Typography variant="body2" component="div" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-        Developed by<strong style={{ fontWeight: 600 }}>Amir Rahimi</strong>
-        <Tooltip title={linkedInUrl ? 'LinkedIn Profile' : 'Set VITE_LINKEDIN_URL to enable link'}>
+        Developed by:<strong style={{ fontWeight: 600, padding: 0 }}>Amir Rahimi</strong>
+        <Tooltip title={'LinkedIn Profile'}>
           <span>
             <IconButton
               size="small"
