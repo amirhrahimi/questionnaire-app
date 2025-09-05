@@ -133,7 +133,7 @@ function NavBar() {
                                     }
                                 }}
                             >
-                                {isMobile ? 'Logout' : 'Logout'}
+                                Logout
                             </Button>
                         </Box>
                     )}
