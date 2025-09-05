@@ -92,25 +92,7 @@ const QuestionnaireList = ({
                     </Box>
                 </Box>
                 
-                <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-                    <Tooltip title="Edit">
-                        <IconButton
-                            color="primary"
-                            size="small"
-                            onClick={() => onEdit(q)}
-                            sx={{
-                                border: '1px solid',
-                                borderColor: 'primary.main',
-                                borderRadius: 1,
-                                '&:hover': {
-                                    backgroundColor: 'primary.50',
-                                    borderColor: 'primary.dark'
-                                }
-                            }}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                    </Tooltip>
+                <Stack direction="row" spacing={0.8} flexWrap="wrap">
                     <Tooltip title="View Results">
                         <span>
                             <IconButton
@@ -188,6 +170,24 @@ const QuestionnaireList = ({
                             }}
                         >
                             {q.isActive ? <DeactivateIcon /> : <ActivateIcon />}
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit">
+                        <IconButton
+                            color="primary"
+                            size="small"
+                            onClick={() => onEdit(q)}
+                            sx={{
+                                border: '1px solid',
+                                borderColor: 'primary.main',
+                                borderRadius: 1,
+                                '&:hover': {
+                                    backgroundColor: 'primary.50',
+                                    borderColor: 'primary.dark'
+                                }
+                            }}
+                        >
+                            <EditIcon />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete">
