@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Loading } from '../common/Loading';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Questionnaire, QuestionResponse, SubmitResponse } from '../../types';
 import { QuestionType } from '../../types';
@@ -158,7 +159,10 @@ const UserPanel = () => {
     // Show selected questionnaire form if we have an ID in the URL
     if (id) {
         if (loading) {
-            return <div>Loading questionnaire...</div>;
+            return <>
+                {/* Centralized loading UI */}
+                <Loading label="Loading questionnaire…" />
+            </>;
         }
         
         if (selectedQuestionnaire) {
@@ -176,7 +180,7 @@ const UserPanel = () => {
         }
         
         // If we have an ID but no questionnaire (e.g., not found), show loading or redirect
-        return <div>Loading questionnaire...</div>;
+    return <Loading label="Loading questionnaire…" />;
     }
 
     // Show questionnaire grid when no ID in URL

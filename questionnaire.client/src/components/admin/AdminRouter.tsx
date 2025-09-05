@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Loading } from '../common/Loading';
 import { useLocation, useParams, useNavigate, Navigate } from 'react-router-dom';
 import type { Questionnaire, CreateQuestionnaire, QuestionnaireResult } from '../../types';
 import QuestionnaireList from './QuestionnaireList';
@@ -100,7 +101,7 @@ const AdminRouter = ({
                 return <Navigate to="/admin" replace />;
             }
             if (!editingQuestionnaire) {
-                return <div>Loading...</div>;
+                return <Loading label="Loading questionnaire…" />;
             }
             return (
                 <CreateQuestionnaireForm
@@ -172,7 +173,7 @@ const ResultsViewWrapper = ({ questionnaireId, onViewResults, onBack }: ResultsV
     }, [questionnaireId, onViewResults, onBack]);
 
     if (loading) {
-        return <div>Loading results...</div>;
+        return <Loading label="Loading results…" />;
     }
 
     if (!results) {

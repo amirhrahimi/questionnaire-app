@@ -1,38 +1,41 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, AppBar, Toolbar, Typography, Box, Button, Avatar, useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { AppBar, Toolbar, Typography, Box, Button, Avatar, useMediaQuery } from '@mui/material';
 import { Logout as LogoutIcon } from '@mui/icons-material';
-import { AdminPanel, UserPanel, ProtectedRoute } from './components';
+import { Suspense, lazy } from 'react';
+import { ProtectedRoute } from './components';
+const AdminPanel = lazy(() => import('./components').then(m => ({ default: m.AdminPanel })));
+const UserPanel = lazy(() => import('./components').then(m => ({ default: m.UserPanel })));
 import { AuthProvider } from './contexts/AuthProvider';
 import { useAuth } from './hooks/useAuth';
+import { ColorModeProvider, useColorMode } from './contexts/ColorModeContext';
+import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Loading } from './components/common/Loading';
 
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#2563eb',
-        },
-        secondary: {
-            main: '#16a34a',
-        },
-    },
-    typography: {
-        fontFamily: 'Roboto, Arial, sans-serif',
-    },
-    components: {
-        MuiButton: {
-            styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                },
-            },
-        },
-    },
-});
+function ModeSelect() {
+    const { mode, setMode, resolvedMode } = useColorMode();
+    return (
+        <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel id="color-mode-label">Theme</InputLabel>
+            <Select
+                labelId="color-mode-label"
+                value={mode}
+                label="Theme"
+                onChange={(e) => setMode(e.target.value as 'light' | 'dark' | 'system')}
+            >
+                <MenuItem value="light">Light</MenuItem>
+                <MenuItem value="dark">Dark</MenuItem>
+                <MenuItem value="system">System ({resolvedMode})</MenuItem>
+            </Select>
+        </FormControl>
+    );
+}
 
 function NavBar() {
     const location = useLocation();
     const { user, logout, isAuthenticated, isAdmin } = useAuth();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const muiTheme = useTheme();
+    const isMobile = useMediaQuery(muiTheme.breakpoints.down('sm'));
     
     return (
         <AppBar position="static">
@@ -88,6 +91,7 @@ function NavBar() {
                         </Button>
                     </Box>
 
+                    <ModeSelect />
                     {/* User Info and Logout (only show if authenticated) */}
                     {isAuthenticated && isAdmin && (
                         <Box 
@@ -145,8 +149,7 @@ function NavBar() {
 
 function App() {
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
+    <ColorModeProvider>
             <AuthProvider>
                 <Router>
                     <Box sx={{ 
@@ -163,6 +166,7 @@ function App() {
                             overflow: 'auto', // Allow vertical scrolling
                             maxWidth: '100vw' // Prevent content from exceeding viewport width
                         }}>
+                            <Suspense fallback={<Loading label="Loading application…" /> }>
                             <Routes>
                                 {/* User Routes */}
                                 <Route path="/" element={<UserPanel />} />
@@ -211,11 +215,12 @@ function App() {
                                     } 
                                 />
                             </Routes>
+                            </Suspense>
                         </Box>
                     </Box>
                 </Router>
             </AuthProvider>
-        </ThemeProvider>
+        </ColorModeProvider>
     );
 }
 
