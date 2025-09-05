@@ -1,13 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { AppBar, Toolbar, Typography, Box, Button, Avatar, useMediaQuery, IconButton, Menu, MenuItem, Divider, ListItemIcon, FormControl, InputLabel, Select } from '@mui/material';
-import { Logout as LogoutIcon, Menu as MenuIcon, ColorLens as ColorLensIcon, AdminPanelSettings } from '@mui/icons-material';
+import { Logout as LogoutIcon, Menu as MenuIcon, AdminPanelSettings, LightMode, DarkMode, SettingsBrightness } from '@mui/icons-material';
 import { useState, memo } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useColorMode } from '../../contexts/ColorModeContext';
 
 function ModeSelect() {
-  const { mode, setMode, resolvedMode } = useColorMode();
+  const { mode, setMode } = useColorMode();
   return (
     <FormControl size="small" sx={{ minWidth: 140 }}>
       <InputLabel id="color-mode-label">Theme</InputLabel>
@@ -19,7 +19,7 @@ function ModeSelect() {
       >
         <MenuItem value="light">Light</MenuItem>
         <MenuItem value="dark">Dark</MenuItem>
-        <MenuItem value="system">System ({resolvedMode})</MenuItem>
+        <MenuItem value="system">System</MenuItem>
       </Select>
     </FormControl>
   );
@@ -150,15 +150,15 @@ export const Header = memo(function Header() {
           <Divider sx={{ my: 0.5 }} />
           <MenuItem disabled sx={{ opacity: 0.7, fontSize: '0.75rem', textTransform: 'uppercase' }}>Theme</MenuItem>
           <MenuItem onClick={() => setMode('light')} selected={mode === 'light'}>
-            <ListItemIcon><ColorLensIcon fontSize="small" /></ListItemIcon>
+            <ListItemIcon><LightMode fontSize="small" /></ListItemIcon>
             Light
           </MenuItem>
           <MenuItem onClick={() => setMode('dark')} selected={mode === 'dark'}>
-            <ListItemIcon><ColorLensIcon fontSize="small" /></ListItemIcon>
+            <ListItemIcon><DarkMode fontSize="small" /></ListItemIcon>
             Dark
           </MenuItem>
           <MenuItem onClick={() => setMode('system')} selected={mode === 'system'}>
-            <ListItemIcon><ColorLensIcon fontSize="small" /></ListItemIcon>
+            <ListItemIcon><SettingsBrightness fontSize="small" /></ListItemIcon>
             System ({resolvedMode})
           </MenuItem>
         </Menu>
