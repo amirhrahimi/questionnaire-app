@@ -38,7 +38,7 @@ function NavBar() {
         <AppBar position="static">
             <Toolbar sx={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
                 <Typography 
-                    variant={isMobile ? "h6" : "h6"} 
+                    variant="h6"
                     component="div" 
                     sx={{ 
                         fontWeight: 600,
@@ -133,7 +133,7 @@ function NavBar() {
                                     }
                                 }}
                             >
-                                {isMobile ? 'Logout' : 'Logout'}
+                                Logout
                             </Button>
                         </Box>
                     )}
