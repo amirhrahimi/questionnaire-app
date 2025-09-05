@@ -46,7 +46,12 @@ export const Header = memo(function Header() {
   const compactTitle = 'Questionnaires';
 
   return (
-    <AppBar position="static" color="primary" enableColorOnDark>
+    <AppBar 
+      position="fixed" 
+      color="primary" 
+      enableColorOnDark
+      sx={{ zIndex: (theme) => theme.zIndex.appBar }}
+    >
       <Toolbar
         variant={isMobile ? 'dense' : undefined}
         sx={{

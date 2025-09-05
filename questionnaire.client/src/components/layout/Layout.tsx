@@ -5,23 +5,25 @@ import { Footer } from './Footer';
 
 export function Layout({ children }: PropsWithChildren) {
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      width: '100%',
-      overflow: 'hidden'
-    }}>
+    <>
       <Header />
       <Box sx={{
-        flex: 1,
-        width: '100%',
-        overflow: 'auto',
-        maxWidth: '100vw'
+        paddingTop: { xs: '44px', sm: '56px' }, // Match the header height exactly
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%'
       }}>
-        {children}
+        <Box sx={{
+          flex: 1,
+          width: '100%',
+          overflow: 'auto',
+          maxWidth: '100vw'
+        }}>
+          {children}
+        </Box>
+        <Footer />
       </Box>
-      <Footer />
-    </Box>
+    </>
   );
 }
