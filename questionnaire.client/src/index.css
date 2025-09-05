@@ -63,8 +63,8 @@ a:hover { color: var(--color-link-hover); }
 
 /* Scrollbar styles - responsive to color mode */
 ::-webkit-scrollbar { 
-  width: 14px; 
-  height: 14px; 
+  width: 6px; 
+  height: 6px; 
 }
 
 ::-webkit-scrollbar-track { 
