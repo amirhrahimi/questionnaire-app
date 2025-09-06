@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { Questionnaire, CreateQuestionnaire, QuestionnaireResult } from '../../../types';
 import api from '../../../services/api';
 import AdminRouter from './AdminRouter';
-import { QrCodeModal } from '../modals';
+import { QrCodeModal, ConfirmDialog } from '../modals';
 
 const AdminPanel = () => {
     const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
@@ -15,6 +15,18 @@ const AdminPanel = () => {
         open: false,
         questionnaireId: '',
         questionnaireTitle: ''
+    });
+
+    const [confirmDialog, setConfirmDialog] = useState<{
+        open: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    }>({
+        open: false,
+        title: '',
+        message: '',
+        onConfirm: () => {}
     });
 
     const fetchQuestionnaires = async () => {
@@ -101,6 +113,24 @@ const AdminPanel = () => {
         });
     };
 
+    const showConfirmDialog = (title: string, message: string, onConfirm: () => void) => {
+        setConfirmDialog({
+            open: true,
+            title,
+            message,
+            onConfirm
+        });
+    };
+
+    const closeConfirmDialog = () => {
+        setConfirmDialog({
+            open: false,
+            title: '',
+            message: '',
+            onConfirm: () => {}
+        });
+    };
+
     const toggleQuestionnaireStatus = async (id: string) => {
         try {
             console.log('Toggling status for questionnaire:', id);
@@ -113,16 +143,23 @@ const AdminPanel = () => {
     };
 
     const deleteQuestionnaire = async (id: string) => {
-        if (window.confirm('Are you sure you want to delete this questionnaire? This action cannot be undone.')) {
+        const performDelete = async () => {
             try {
                 console.log('Deleting questionnaire:', id);
                 await api.delete(`/api/admin/questionnaires/${id}`);
                 fetchQuestionnaires();
+                closeConfirmDialog();
             } catch (error) {
                 console.error('Failed to delete questionnaire:', error);
                 throw error;
             }
-        }
+        };
+
+        showConfirmDialog(
+            'Delete Questionnaire',
+            'Are you sure you want to delete this questionnaire? This action cannot be undone.',
+            performDelete
+        );
     };
 
     return (
@@ -144,6 +181,17 @@ const AdminPanel = () => {
                 onClose={closeQrCodeModal}
                 questionnaireId={qrCodeModal.questionnaireId}
                 questionnaireTitle={qrCodeModal.questionnaireTitle}
+            />
+
+            <ConfirmDialog
+                open={confirmDialog.open}
+                title={confirmDialog.title}
+                message={confirmDialog.message}
+                onConfirm={confirmDialog.onConfirm}
+                onCancel={closeConfirmDialog}
+                confirmText="Delete"
+                cancelText="Cancel"
+                severity="error"
             />
         </>
     );
