@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import type { Questionnaire, CreateQuestionnaire, QuestionnaireResult } from '../../types';
-import api from '../../services/api';
+import type { Questionnaire, CreateQuestionnaire, QuestionnaireResult } from '../../../types';
+import api from '../../../services/api';
 import AdminRouter from './AdminRouter';
-import QrCodeModal from './QrCodeModal';
+import { QrCodeModal } from '../modals';
 
 const AdminPanel = () => {
     const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);

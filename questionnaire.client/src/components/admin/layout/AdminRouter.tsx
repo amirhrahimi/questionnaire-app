@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Loading } from '../common/Loading';
+import { Loading } from '../../common/Loading';
 import { useLocation, useParams, useNavigate, Navigate } from 'react-router-dom';
-import type { Questionnaire, CreateQuestionnaire, QuestionnaireResult } from '../../types';
-import QuestionnaireList from './QuestionnaireList';
-import CreateQuestionnaireForm from './CreateQuestionnaireForm';
-import ResultsView from './ResultsView';
+import type { Questionnaire, CreateQuestionnaire, QuestionnaireResult } from '../../../types';
+import { QuestionnaireList, CreateQuestionnaireForm } from '../questionnaires';
+import { ResultsView } from '../results';
 
 interface AdminRouterProps {
     questionnaires: Questionnaire[];

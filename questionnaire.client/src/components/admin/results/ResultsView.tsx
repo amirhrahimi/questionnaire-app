@@ -8,8 +8,8 @@ import {
     Chip,
     LinearProgress
 } from '@mui/material';
-import type { QuestionnaireResult } from '../../types';
-import { QuestionType } from '../../types';
+import type { QuestionnaireResult } from '../../../types';
+import { QuestionType } from '../../../types';
 
 interface ResultsViewProps {
     results: QuestionnaireResult;

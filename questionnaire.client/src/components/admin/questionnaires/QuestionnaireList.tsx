@@ -29,7 +29,8 @@ import {
     QrCode as QrCodeIcon,
     Edit as EditIcon
 } from '@mui/icons-material';
-import type { Questionnaire } from '../../types';
+import type { Questionnaire } from '../../../types';
+import ActionButton from '../../common/ActionButton';
 
 interface QuestionnaireListProps {
     questionnaires: Questionnaire[];
@@ -244,77 +245,57 @@ const QuestionnaireList = ({
                                 />
                             </TableCell>
                             <TableCell>{new Date(q.createdAt).toLocaleDateString()}</TableCell>
-                            <TableCell>
+                            <TableCell sx={{ padding: 1 }}>
                                 <Stack direction="row" spacing={1}>
-                                    <Tooltip title="View Results">
-                                        <span>
-                                            <Button 
-                                                onClick={() => onViewResults(q.id)}
-                                                disabled={(q.responseCount || 0) === 0}
-                                                startIcon={<VisibilityIcon />}
-                                                color="primary"
-                                                variant="outlined"
-                                                size="small"
-                                            >
-                                                Results
-                                            </Button>
-                                        </span>
-                                    </Tooltip>
-                                    <Tooltip title="Copy Link">
-                                        <Button 
-                                            onClick={() => onCopyLink(q.id)}
-                                            color="success"
-                                            startIcon={<LinkIcon />}
-                                            variant="outlined"
-                                            size="small"
-                                        >
-                                            Copy Link
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title="Show QR Code">
-                                        <Button 
-                                            onClick={() => onShowQrCode(q.id)}
-                                            color="info"
-                                            startIcon={<QrCodeIcon />}
-                                            variant="outlined"
-                                            size="small"
-                                        >
-                                            QR Code
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title={q.isActive ? 'Deactivate' : 'Activate'}>
-                                        <Button 
-                                            onClick={() => onToggleStatus(q.id)}
-                                            color={q.isActive ? 'warning' : 'success'}
-                                            startIcon={q.isActive ? <DeactivateIcon /> : <ActivateIcon />}
-                                            variant="outlined"
-                                            size="small"
-                                        >
-                                            {q.isActive ? 'Deactivate' : 'Activate'}
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title="Edit">
-                                        <Button 
-                                            onClick={() => onEdit(q)}
-                                            color="primary"
-                                            startIcon={<EditIcon />}
-                                            variant="outlined"
-                                            size="small"
-                                        >
-                                            Edit
-                                        </Button>
-                                    </Tooltip>
-                                    <Tooltip title="Delete">
-                                        <Button 
-                                            onClick={() => onDelete(q.id)}
-                                            color="error"
-                                            startIcon={<DeleteIcon />}
-                                            variant="outlined"
-                                            size="small"
-                                        >
-                                            Delete
-                                        </Button>
-                                    </Tooltip>
+                                    <ActionButton
+                                        tooltip="View Results"
+                                        icon={<VisibilityIcon />}
+                                        onClick={() => onViewResults(q.id)}
+                                        disabled={(q.responseCount || 0) === 0}
+                                        color="primary"
+                                    >
+                                        Results
+                                    </ActionButton>
+                                    <ActionButton
+                                        tooltip="Copy Link"
+                                        icon={<LinkIcon />}
+                                        onClick={() => onCopyLink(q.id)}
+                                        color="success"
+                                    >
+                                        Copy Link
+                                    </ActionButton>
+                                    <ActionButton
+                                        tooltip="Show QR Code"
+                                        icon={<QrCodeIcon />}
+                                        onClick={() => onShowQrCode(q.id)}
+                                        color="info"
+                                    >
+                                        QR Code
+                                    </ActionButton>
+                                    <ActionButton
+                                        tooltip={q.isActive ? 'Deactivate' : 'Activate'}
+                                        icon={q.isActive ? <DeactivateIcon /> : <ActivateIcon />}
+                                        onClick={() => onToggleStatus(q.id)}
+                                        color={q.isActive ? 'warning' : 'success'}
+                                    >
+                                        {q.isActive ? 'Deactivate' : 'Activate'}
+                                    </ActionButton>
+                                    <ActionButton
+                                        tooltip="Edit"
+                                        icon={<EditIcon />}
+                                        onClick={() => onEdit(q)}
+                                        color="primary"
+                                    >
+                                        Edit
+                                    </ActionButton>
+                                    <ActionButton
+                                        tooltip="Delete"
+                                        icon={<DeleteIcon />}
+                                        onClick={() => onDelete(q.id)}
+                                        color="error"
+                                    >
+                                        Delete
+                                    </ActionButton>
                                 </Stack>
                             </TableCell>
                         </TableRow>

@@ -19,8 +19,8 @@ import {
     Add as AddIcon,
     Delete as DeleteIcon
 } from '@mui/icons-material';
-import type { CreateQuestionnaire, CreateQuestion, Questionnaire, Question, QuestionOption } from '../../types';
-import { QuestionType } from '../../types';
+import type { CreateQuestionnaire, CreateQuestion, Questionnaire, Question, QuestionOption } from '../../../types';
+import { QuestionType } from '../../../types';
 
 interface CreateQuestionnaireFormProps {
     questionnaire?: Questionnaire;
