@@ -72,7 +72,6 @@ namespace Questionnaire.Server.Controllers
                         Email = googleUserInfo.Email,
                         Name = googleUserInfo.Name,
                         Picture = googleUserInfo.Picture,
-                        IsAdmin = IsAdminEmail(googleUserInfo.Email), // Configure this method
                         CreatedAt = DateTime.UtcNow,
                         LastLoginAt = DateTime.UtcNow
                     };
@@ -86,6 +85,7 @@ namespace Questionnaire.Server.Controllers
                     user.LastLoginAt = DateTime.UtcNow;
                 }
 
+                user.IsAdmin = IsAdminEmail(googleUserInfo.Email); // Configure this method
                 await _context.SaveChangesAsync();
 
                 // Check if user is admin (this is also enforced by JWT claims)

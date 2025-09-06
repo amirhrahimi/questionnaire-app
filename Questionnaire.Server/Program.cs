@@ -19,8 +19,20 @@ namespace Questionnaire.Server
             if (builder.Environment.IsDevelopment())
             {
                 // Use InMemory database for local development
-                builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
-                    options.UseInMemoryDatabase("QuestionnaireDb"));
+                //builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                //    options.UseInMemoryDatabase("QuestionnaireDb"));
+
+                var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") ??
+                                       builder.Configuration.GetConnectionString("DefaultConnection");
+
+                if (!string.IsNullOrEmpty(connectionString))
+                {
+                    // Railway provides DATABASE_URL in a specific format
+                    connectionString = ConvertRailwayConnectionString(connectionString);
+
+                    builder.Services.AddDbContext<QuestionnaireDbContext>(options =>
+                        options.UseNpgsql(connectionString));
+                }
             }
             else
             {
@@ -82,13 +94,21 @@ namespace Questionnaire.Server
             
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Questionnaire API",
+                    Version = "v1",
+                    Description = "API for managing questionnaires and responses"
+                });
+            });
 
             var app = builder.Build();
 
             // Auto-migrate database in production (only for relational databases)
-            if (!app.Environment.IsDevelopment())
-            {
+            //if (!app.Environment.IsDevelopment())
+            //{
                 using (var scope = app.Services.CreateScope())
                 {
                     var context = scope.ServiceProvider.GetRequiredService<QuestionnaireDbContext>();
@@ -116,7 +136,7 @@ namespace Questionnaire.Server
                         throw;
                     }
                 }
-            }
+            //}
 
             // Configure for Railway deployment
             var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
@@ -137,7 +157,11 @@ namespace Questionnaire.Server
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Questionnaire API v1");
+                    c.RoutePrefix = "swagger";
+                });
             }
 
             // Only redirect to HTTPS in development (Railway handles SSL)

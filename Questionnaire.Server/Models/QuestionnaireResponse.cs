@@ -8,7 +8,7 @@ namespace Questionnaire.Server.Models
         
         public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
         
-        public int QuestionnaireId { get; set; }
+        public Guid QuestionnaireId { get; set; }
         public Questionnaire Questionnaire { get; set; } = null!;
         
         public List<Response> Responses { get; set; } = new();

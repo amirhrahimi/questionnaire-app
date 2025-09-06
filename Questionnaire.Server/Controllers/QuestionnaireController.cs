@@ -53,7 +53,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<QuestionnaireDto>> GetQuestionnaire(int id)
+        public async Task<ActionResult<QuestionnaireDto>> GetQuestionnaire(Guid id)
         {
             var questionnaire = await _context.Questionnaires
                 .Include(q => q.Questions)

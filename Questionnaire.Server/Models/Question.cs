@@ -23,7 +23,7 @@ namespace Questionnaire.Server.Models
         
         public int Order { get; set; }
         
-        public int QuestionnaireId { get; set; }
+        public Guid QuestionnaireId { get; set; }
         public Questionnaire Questionnaire { get; set; } = null!;
         
         public List<QuestionOption> Options { get; set; } = new();
