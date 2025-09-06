@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Loading } from '../common/Loading';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { Questionnaire, QuestionResponse, SubmitResponse } from '../../types';
@@ -7,12 +7,8 @@ import api from '../../services/api';
 import QuestionnaireGrid from './QuestionnaireGrid';
 import QuestionnaireForm from './QuestionnaireForm';
 import AlreadySubmitted from './AlreadySubmitted';
+// import FingerprintDebug from '../debug/FingerprintDebug';
 import fingerprintService from '../../services/fingerprint';
-
-// Conditionally import FingerprintDebug only in development
-const FingerprintDebug = import.meta.env.DEV 
-    ? lazy(() => import('../debug/FingerprintDebug'))
-    : null;
 
 const UserPanel = () => {
     const { id } = useParams<{ id: string }>();
@@ -219,11 +215,7 @@ const UserPanel = () => {
             // Show the questionnaire form
             return (
                 <>
-                    {import.meta.env.DEV && FingerprintDebug && (
-                        <Suspense fallback={<Loading />}>
-                            <FingerprintDebug questionnaireId={selectedQuestionnaire.id} />
-                        </Suspense>
-                    )}
+                    {/* <FingerprintDebug questionnaireId={selectedQuestionnaire.id} /> */}
                     <QuestionnaireForm
                         questionnaire={selectedQuestionnaire}
                         responses={responses}
