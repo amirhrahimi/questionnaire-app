@@ -6,6 +6,9 @@ import { QuestionType } from '../../types';
 import api from '../../services/api';
 import QuestionnaireGrid from './QuestionnaireGrid';
 import QuestionnaireForm from './QuestionnaireForm';
+import AlreadySubmitted from './AlreadySubmitted';
+import FingerprintDebug from '../debug/FingerprintDebug';
+import fingerprintService from '../../services/fingerprint';
 
 const UserPanel = () => {
     const { id } = useParams<{ id: string }>();
@@ -16,6 +19,8 @@ const UserPanel = () => {
     const [loading, setLoading] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
     const [errors, setErrors] = useState<string[]>([]);
+    const [alreadySubmitted, setAlreadySubmitted] = useState(false);
+    const [checkingSubmission, setCheckingSubmission] = useState(false);
 
     const fetchQuestionnaires = async () => {
         try {
@@ -50,18 +55,37 @@ const UserPanel = () => {
             // If we have an ID in the URL, load that specific questionnaire
             const loadQuestionnaire = async () => {
                 setLoading(true);
+                setCheckingSubmission(true);
+                setAlreadySubmitted(false);
+                
                 try {
+                    // First check if the user has already submitted a response
+                    const hasSubmitted = await fingerprintService.hasSubmittedResponse(id);
+                    
+                    if (hasSubmitted) {
+                        // Load questionnaire data for display purposes
+                        const response = await api.get(`/api/questionnaire/${id}`);
+                        setSelectedQuestionnaire(response.data);
+                        setAlreadySubmitted(true);
+                        setCheckingSubmission(false);
+                        setLoading(false);
+                        return;
+                    }
+                    
+                    // If not submitted, load questionnaire normally
                     const response = await api.get(`/api/questionnaire/${id}`);
                     setSelectedQuestionnaire(response.data);
                     initializeResponses(response.data);
                     setSubmitStatus('idle');
                     setErrors([]);
+                    setAlreadySubmitted(false);
                 } catch (error) {
                     console.error('Failed to fetch questionnaire:', error);
                     // If questionnaire not found, redirect to main page
                     navigate('/');
                 } finally {
                     setLoading(false);
+                    setCheckingSubmission(false);
                 }
             };
             loadQuestionnaire();
@@ -71,6 +95,8 @@ const UserPanel = () => {
             setResponses([]);
             setErrors([]);
             setSubmitStatus('idle');
+            setAlreadySubmitted(false);
+            setCheckingSubmission(false);
             fetchQuestionnaires();
         }
     }, [id, navigate, initializeResponses]);
@@ -119,6 +145,13 @@ const UserPanel = () => {
 
         if (!selectedQuestionnaire) return;
 
+        // Check one more time before submitting to prevent race conditions
+        const hasSubmitted = await fingerprintService.hasSubmittedResponse(selectedQuestionnaire.id);
+        if (hasSubmitted) {
+            setAlreadySubmitted(true);
+            return;
+        }
+
         setErrors([]);
         setSubmitStatus('submitting');
 
@@ -136,6 +169,9 @@ const UserPanel = () => {
             console.log('Submitting response:', submitData);
             const response = await api.post('/api/questionnaire/submit', submitData);
             console.log('Response submitted:', response.data);
+            
+            // Mark as submitted in browser fingerprint storage
+            await fingerprintService.markAsSubmitted(selectedQuestionnaire.id);
             
             setSubmitStatus('success');
         } catch (error: unknown) {
@@ -158,29 +194,43 @@ const UserPanel = () => {
 
     // Show selected questionnaire form if we have an ID in the URL
     if (id) {
-        if (loading) {
+        if (loading || checkingSubmission) {
             return <>
                 {/* Centralized loading UI */}
-                <Loading label="Loading questionnaire…" />
+                <Loading label={checkingSubmission ? "Checking submission status…" : "Loading questionnaire…"} />
             </>;
         }
         
         if (selectedQuestionnaire) {
+            // Show already submitted message if user has already responded
+            if (alreadySubmitted) {
+                return (
+                    <AlreadySubmitted
+                        questionnaireName={selectedQuestionnaire.title}
+                        onGoBack={handleBack}
+                    />
+                );
+            }
+            
+            // Show the questionnaire form
             return (
-                <QuestionnaireForm
-                    questionnaire={selectedQuestionnaire}
-                    responses={responses}
-                    errors={errors}
-                    submitStatus={submitStatus}
-                    onBack={handleBack}
-                    onUpdateResponse={updateResponse}
-                    onSubmit={submitResponse}
-                />
+                <>
+                    <FingerprintDebug questionnaireId={selectedQuestionnaire.id} />
+                    <QuestionnaireForm
+                        questionnaire={selectedQuestionnaire}
+                        responses={responses}
+                        errors={errors}
+                        submitStatus={submitStatus}
+                        onBack={handleBack}
+                        onUpdateResponse={updateResponse}
+                        onSubmit={submitResponse}
+                    />
+                </>
             );
         }
         
         // If we have an ID but no questionnaire (e.g., not found), show loading or redirect
-    return <Loading label="Loading questionnaire…" />;
+        return <Loading label="Loading questionnaire…" />;
     }
 
     // Show questionnaire grid when no ID in URL
