@@ -26,7 +26,7 @@ const ActionButton = ({
             size={size}
             disabled={disabled}
             sx={{ 
-                minHeight: 28, 
+                // minHeight: 28, 
                 // fontSize: '0.75rem',
                 // padding: '4px 8px',
                 ...buttonProps.sx

@@ -2,7 +2,7 @@
 export { AdminPanel, AdminRouter } from './layout';
 
 // Questionnaire components
-export { QuestionnaireList, CreateQuestionnaireForm } from './questionnaires';
+export { QuestionnaireList, CreateQuestionnaireForm, ViewQuestionnaire } from './questionnaires';
 
 // Results components
 export { ResultsView } from './results';

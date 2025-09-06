@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Loading } from '../../common/Loading';
 import { useLocation, useParams, useNavigate, Navigate } from 'react-router-dom';
 import type { Questionnaire, CreateQuestionnaire, QuestionnaireResult } from '../../../types';
-import { QuestionnaireList, CreateQuestionnaireForm } from '../questionnaires';
-import { ResultsView } from '../results';
+import { QuestionnaireList, CreateQuestionnaireForm, ViewQuestionnaire } from '../questionnaires/index';
+import { ResultsView } from '../results/index';
 
 interface AdminRouterProps {
     questionnaires: Questionnaire[];
@@ -38,6 +38,7 @@ const AdminRouter = ({
         if (path === '/admin' || path === '/admin/') return 'list';
         if (path === '/admin/create') return 'create';
         if (path.includes('/admin/edit/')) return 'edit';
+        if (path.includes('/admin/view/')) return 'view';
         if (path.includes('/admin/results/')) return 'results';
         return 'list';
     };
@@ -50,16 +51,33 @@ const AdminRouter = ({
         navigate('/admin');
     };
 
+    // Handle questionnaire viewing
+    const handleViewQuestionnaire = (questionnaire: Questionnaire) => {
+        navigate(`/admin/view/${questionnaire.id}`, {
+            state: { from: '/admin' }
+        });
+    };
+
     // Handle questionnaire editing
     const handleEditQuestionnaire = (questionnaire: Questionnaire) => {
-        navigate(`/admin/edit/${questionnaire.id}`);
+        const currentPath = location.pathname;
+        navigate(`/admin/edit/${questionnaire.id}`, { 
+            state: { from: currentPath }
+        });
     };
 
     // Handle questionnaire update
     const handleUpdateQuestionnaire = async (questionnaire: CreateQuestionnaire) => {
         if (!id) return;
         await onUpdateQuestionnaire(id, questionnaire);
-        navigate('/admin');
+        
+        // Navigate back to where we came from, or default to admin panel
+        const fromPath = (location.state as { from?: string })?.from;
+        if (fromPath && fromPath.includes('/admin/view/')) {
+            navigate(fromPath);
+        } else {
+            navigate('/admin');
+        }
     };
 
     // Handle viewing results
@@ -69,7 +87,23 @@ const AdminRouter = ({
 
     // Handle cancel operations
     const handleCancel = () => {
-        navigate('/admin');
+        // Navigate back to where we came from, or default to admin panel
+        const fromPath = (location.state as { from?: string })?.from;
+        if (fromPath) {
+            navigate(fromPath);
+        } else {
+            navigate('/admin');
+        }
+    };
+
+    // Handle cancel from edit specifically
+    const handleEditCancel = () => {
+        const fromPath = (location.state as { from?: string })?.from;
+        if (fromPath) {
+            navigate(fromPath, { replace: true });
+        } else {
+            navigate('/admin', { replace: true });
+        }
     };
 
     // Handle create new button
@@ -106,7 +140,29 @@ const AdminRouter = ({
                 <CreateQuestionnaireForm
                     questionnaire={editingQuestionnaire}
                     onSave={handleUpdateQuestionnaire}
-                    onCancel={handleCancel}
+                    onCancel={handleEditCancel}
+                />
+            );
+        }
+
+        case 'view': {
+            const viewingQuestionnaire = getQuestionnaireForEdit();
+            if (!viewingQuestionnaire && !loading) {
+                // Questionnaire not found, redirect to admin
+                return <Navigate to="/admin" replace />;
+            }
+            if (!viewingQuestionnaire) {
+                return <Loading label="Loading questionnaire…" />;
+            }
+            return (
+                <ViewQuestionnaire
+                    questionnaire={viewingQuestionnaire}
+                    onBack={handleCancel}
+                    onEdit={handleEditQuestionnaire}
+                    onViewResults={handleViewResults}
+                    onCopyLink={onCopyLink}
+                    onShowQrCode={onShowQrCode}
+                    onToggleStatus={onToggleStatus}
                 />
             );
         }
@@ -128,6 +184,7 @@ const AdminRouter = ({
                     loading={loading}
                     onCreateNew={handleCreateNew}
                     onEdit={handleEditQuestionnaire}
+                    onView={handleViewQuestionnaire}
                     onViewResults={handleViewResults}
                     onCopyLink={onCopyLink}
                     onShowQrCode={onShowQrCode}

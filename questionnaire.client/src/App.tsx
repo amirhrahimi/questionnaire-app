@@ -46,6 +46,14 @@ function App() {
                                     }
                                 />
                                 <Route
+                                    path="/admin/view/:id"
+                                    element={
+                                        <ProtectedRoute>
+                                            <AdminPanel />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
                                     path="/admin/results/:id"
                                     element={
                                         <ProtectedRoute>

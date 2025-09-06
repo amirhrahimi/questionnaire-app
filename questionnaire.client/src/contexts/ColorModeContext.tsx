@@ -82,24 +82,24 @@ function buildTheme(mode: "light" | "dark"): Theme {
           },
         },
       },
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            textTransform: "none",
-            minHeight: 40,
-            borderRadius: "var(--radius-md)",
-            fontWeight: 500,
-          },
-        },
-      },
-      MuiIconButton: {
-        styleOverrides: { root: { minWidth: 44, minHeight: 44 } },
-      },
-      MuiTableContainer: {
-        styleOverrides: {
-          root: { overflowX: "auto", WebkitOverflowScrolling: "touch" },
-        },
-      },
+      // MuiButton: {
+      //   styleOverrides: {
+      //     root: {
+      //       textTransform: "none",
+      //       minHeight: 40,
+      //       borderRadius: "var(--radius-md)",
+      //       fontWeight: 500,
+      //     },
+      //   },
+      // },
+      // MuiIconButton: {
+      //   styleOverrides: { root: { minWidth: 44, minHeight: 44 } },
+      // },
+      // MuiTableContainer: {
+      //   styleOverrides: {
+      //     root: { overflowX: "auto", WebkitOverflowScrolling: "touch" },
+      //   },
+      // },
     },
   });
 
