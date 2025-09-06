@@ -219,12 +219,12 @@ const QuestionnaireList = ({
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Title</TableCell>
-                        <TableCell>Questions</TableCell>
-                        <TableCell>Responses</TableCell>
-                        <TableCell>Status</TableCell>
-                        <TableCell>Created</TableCell>
-                        <TableCell sx={{ minWidth: 610, width: 610 }}>Actions</TableCell>
+                        <TableCell sx={{ minWidth: 500 }}>Title</TableCell>
+                        <TableCell sx={{ width: 100 }}>Questions</TableCell>
+                        <TableCell sx={{ width: 120 }}>Responses</TableCell>
+                        <TableCell sx={{ width: 100 }}>Status</TableCell>
+                        <TableCell sx={{ width: 100 }}>Created</TableCell>
+                        <TableCell sx={{ minWidth: 500, width: 500 }}>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -255,14 +255,6 @@ const QuestionnaireList = ({
                                         color="primary"
                                     >
                                         Results
-                                    </ActionButton>
-                                    <ActionButton
-                                        tooltip="Copy Link"
-                                        icon={<LinkIcon />}
-                                        onClick={() => onCopyLink(q.id)}
-                                        color="success"
-                                    >
-                                        Copy Link
                                     </ActionButton>
                                     <ActionButton
                                         tooltip="Show QR Code"

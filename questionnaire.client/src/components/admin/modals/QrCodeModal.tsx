@@ -238,13 +238,6 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
                         <>
                             <Button
                                 variant="outlined"
-                                startIcon={<CopyIcon />}
-                                onClick={copyQrCodeLink}
-                            >
-                                Copy Link
-                            </Button>
-                            <Button
-                                variant="outlined"
                                 startIcon={<DownloadIcon />}
                                 onClick={downloadQrCode}
                                 disabled={!qrCodeDataUrl}
