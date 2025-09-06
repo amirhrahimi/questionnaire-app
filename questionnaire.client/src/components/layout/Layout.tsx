@@ -8,7 +8,6 @@ export function Layout({ children }: PropsWithChildren) {
     <>
       <Header />
       <Box sx={{
-        paddingTop: { xs: '44px', sm: '56px' }, // Match the header height exactly
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',

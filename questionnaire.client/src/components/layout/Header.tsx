@@ -47,7 +47,7 @@ export const Header = memo(function Header() {
 
   return (
     <AppBar 
-      position="fixed" 
+      position="static" 
       color="primary" 
       enableColorOnDark
       sx={{ zIndex: (theme) => theme.zIndex.appBar }}
