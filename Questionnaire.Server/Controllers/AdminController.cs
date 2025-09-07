@@ -56,7 +56,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpGet("questionnaires/{id}")]
-        public async Task<ActionResult<QuestionnaireDto>> GetQuestionnaire(int id)
+        public async Task<ActionResult<QuestionnaireDto>> GetQuestionnaire(Guid id)
         {
             var questionnaire = await _context.Questionnaires
                 .Include(q => q.Questions)
@@ -147,8 +147,65 @@ namespace Questionnaire.Server.Controllers
             return await GetQuestionnaire(questionnaire.Id);
         }
 
+        [HttpPut("questionnaires/{id}")]
+        public async Task<ActionResult<QuestionnaireDto>> UpdateQuestionnaire(Guid id, CreateQuestionnaireDto updateDto)
+        {
+            var existingQuestionnaire = await _context.Questionnaires
+                .Include(q => q.Questions)
+                    .ThenInclude(qu => qu.Options)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (existingQuestionnaire == null)
+            {
+                return NotFound();
+            }
+
+            // Update basic properties
+            existingQuestionnaire.Title = updateDto.Title;
+            existingQuestionnaire.Description = updateDto.Description;
+
+            // Remove existing questions and their options
+            _context.QuestionOptions.RemoveRange(
+                existingQuestionnaire.Questions.SelectMany(q => q.Options));
+            _context.Questions.RemoveRange(existingQuestionnaire.Questions);
+
+            // Add new questions
+            foreach (var questionDto in updateDto.Questions)
+            {
+                var question = new Question
+                {
+                    Text = questionDto.Text,
+                    Type = questionDto.Type,
+                    IsRequired = questionDto.IsRequired,
+                    Order = questionDto.Order,
+                    QuestionnaireId = existingQuestionnaire.Id
+                };
+
+                _context.Questions.Add(question);
+
+                // Add options for multiple choice questions
+                if (questionDto.Type == QuestionType.SingleChoice || questionDto.Type == QuestionType.MultipleChoice)
+                {
+                    foreach (var optionDto in questionDto.Options)
+                    {
+                        var option = new QuestionOption
+                        {
+                            Text = optionDto.Text,
+                            Order = optionDto.Order,
+                            Question = question
+                        };
+                        _context.QuestionOptions.Add(option);
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return await GetQuestionnaire(existingQuestionnaire.Id);
+        }
+
         [HttpPut("questionnaires/{id}/toggle")]
-        public async Task<IActionResult> ToggleQuestionnaireStatus(int id)
+        public async Task<IActionResult> ToggleQuestionnaireStatus(Guid id)
         {
             var questionnaire = await _context.Questionnaires.FindAsync(id);
             if (questionnaire == null)
@@ -163,7 +220,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpDelete("questionnaires/{id}")]
-        public async Task<IActionResult> DeleteQuestionnaire(int id)
+        public async Task<IActionResult> DeleteQuestionnaire(Guid id)
         {
             var questionnaire = await _context.Questionnaires.FindAsync(id);
             if (questionnaire == null)
@@ -178,7 +235,7 @@ namespace Questionnaire.Server.Controllers
         }
 
         [HttpGet("questionnaires/{id}/results")]
-        public async Task<ActionResult<QuestionnaireResultDto>> GetQuestionnaireResults(int id)
+        public async Task<ActionResult<QuestionnaireResultDto>> GetQuestionnaireResults(Guid id)
         {
             var questionnaire = await _context.Questionnaires
                 .Include(q => q.Questions)

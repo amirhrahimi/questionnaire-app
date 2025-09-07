@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^4.6.2"
+  },
+  "devDependencies": {
+    "@types/fingerprintjs__fingerprintjs": "^2.1.0"
+  }
+}

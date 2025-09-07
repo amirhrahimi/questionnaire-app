@@ -19,5 +19,14 @@ export default tseslint.config([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      'no-restricted-syntax': [
+        'warn',
+        {
+          selector: 'JSXElement[openingElement.name.name="div"] > JSXText[value=/^\\s*Loading/]',
+          message: 'Use <Loading /> component instead of raw <div> with loading text.'
+        }
+      ]
+    }
   },
 ])

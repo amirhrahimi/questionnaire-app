@@ -36,8 +36,8 @@ namespace Questionnaire.Server.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("integer");
 
-                    b.Property<int>("QuestionnaireId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("QuestionnaireId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -82,11 +82,9 @@ namespace Questionnaire.Server.Migrations
 
             modelBuilder.Entity("Questionnaire.Server.Models.Questionnaire", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -116,8 +114,8 @@ namespace Questionnaire.Server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("QuestionnaireId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("QuestionnaireId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("SubmittedAt")
                         .HasColumnType("timestamp with time zone");
