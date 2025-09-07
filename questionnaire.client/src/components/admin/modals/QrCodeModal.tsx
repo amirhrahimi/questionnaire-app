@@ -238,7 +238,6 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
                                     <MenuItem onClick={() => setShareMenuAnchor(null)}>
                                         <FacebookShareButton
                                             url={shareUrl}
-                                            title={shareTitle}
                                             style={{ display: 'flex', alignItems: 'center', width: '100%' }}
                                         >
                                             <ListItemIcon>
@@ -265,6 +264,7 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
                                         <LinkedinShareButton
                                             url={shareUrl}
                                             title={shareTitle}
+                                            summary={`Fill out this questionnaire and help us gather valuable insights!`}
                                             style={{ display: 'flex', alignItems: 'center', width: '100%' }}
                                         >
                                             <ListItemIcon>
@@ -291,6 +291,7 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
                                         <WhatsappShareButton
                                             url={shareUrl}
                                             title={shareTitle}
+                                            separator=" - "
                                             style={{ display: 'flex', alignItems: 'center', width: '100%' }}
                                         >
                                             <ListItemIcon>

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using QRCoder;
-using OpenGraphNet;
 
 namespace Questionnaire.Server.Controllers
 {
@@ -18,36 +17,50 @@ namespace Questionnaire.Server.Controllers
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(url))
                 return BadRequest("Title and URL are required");
 
-            // Create OpenGraph object
-            var graph = OpenGraph.MakeGraph(
-                title: title,
-                type: "website",
-                image: imageUrl ?? "",
-                url: url,
-                description: description,
-                siteName: "Questionnaire App"
-            );
-
-            //// Add Twitter-specific metadata
-            //if (!string.IsNullOrEmpty(twitterCard))
-            //{
-            //    graph.AddMetadata("twitter", "card", twitterCard);
-            //}
-
+            // Set default values if not provided
+            description ??= "Fill out this questionnaire and help us gather valuable insights!";
+            
+            // Create proper Open Graph and Twitter metadata manually for better control
             var html = $@"
-        <!DOCTYPE html>
-        <html lang='en'>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            {graph.ToString()}
-        </head>
-        <body>
-            <h1>{title}</h1>
-            <p>{description}</p>
-            <a href='{url}'>Go to Questionnaire</a>
-        </body>
-        </html>";
+<!DOCTYPE html>
+<html lang=""en"">
+<head>
+    <meta charset=""UTF-8"">
+    <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+    <title>{title}</title>
+    
+    <!-- Open Graph metadata -->
+    <meta property=""og:title"" content=""{title}"" />
+    <meta property=""og:description"" content=""{description}"" />
+    <meta property=""og:url"" content=""{url}"" />
+    <meta property=""og:type"" content=""website"" />
+    <meta property=""og:site_name"" content=""Questionnaire App"" />
+    {(string.IsNullOrEmpty(imageUrl) ? "" : $@"<meta property=""og:image"" content=""{imageUrl}"" />
+    <meta property=""og:image:type"" content=""image/png"" />
+    <meta property=""og:image:width"" content=""300"" />
+    <meta property=""og:image:height"" content=""300"" />")}
+    
+    <!-- Twitter Card metadata -->
+    <meta name=""twitter:card"" content=""summary"" />
+    <meta name=""twitter:title"" content=""{title}"" />
+    <meta name=""twitter:description"" content=""{description}"" />
+    {(string.IsNullOrEmpty(imageUrl) ? "" : $@"<meta name=""twitter:image"" content=""{imageUrl}"" />")}
+    
+    <!-- WhatsApp/Telegram specific -->
+    <meta name=""description"" content=""{description}"" />
+    
+    <!-- Redirect to the actual questionnaire -->
+    <meta http-equiv=""refresh"" content=""3;url={url}"" />
+</head>
+<body>
+    <div style=""font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; text-align: center;"">
+        <h1>{title}</h1>
+        <p>{description}</p>
+        <p>You will be redirected to the questionnaire in 3 seconds...</p>
+        <a href=""{url}"" style=""background-color: #1976d2; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block; margin-top: 20px;"">Go to Questionnaire Now</a>
+    </div>
+</body>
+</html>";
 
             return Content(html, "text/html");
         }
