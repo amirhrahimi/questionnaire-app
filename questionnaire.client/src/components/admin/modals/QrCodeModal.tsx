@@ -15,7 +15,8 @@ import {
     Menu,
     MenuItem,
     ListItemIcon,
-    ListItemText
+    ListItemText,
+    Tooltip
 } from '@mui/material';
 import { Close as CloseIcon, Download as DownloadIcon, ContentCopy as CopyIcon, Share as ShareIcon } from '@mui/icons-material';
 import {
@@ -187,11 +188,22 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
                                         bgcolor: 'white'
                                     }}
                                 >
-                                    <img 
+                                    <Tooltip title="Click to open QR code in new tab">
+                                        <img 
                                         src={qrCodeDataUrl} 
                                         alt="QR Code for questionnaire"
-                                        style={{ display: 'block', maxWidth: '100%' }}
+                                        style={{ 
+                                            display: 'block', 
+                                            maxWidth: '100%',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => {
+                                            const qrImageUrl = `${import.meta.env.VITE_API_BASE_URL}/api/socialshare/qr?url=${encodeURIComponent(`${window.location.origin}/questionnaire/${questionnaireId}`)}`;
+                                            window.open(qrImageUrl, '_blank');
+                                        }}
                                     />
+                                    </Tooltip>
+                                    
                                 </Box>
                                 <Typography variant="body2" color="text.secondary" textAlign="center">
                                     Scan this QR code to access the questionnaire directly
