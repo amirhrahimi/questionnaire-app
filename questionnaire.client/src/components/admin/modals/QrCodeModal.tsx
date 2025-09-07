@@ -11,9 +11,25 @@ import {
     Snackbar,
     Alert,
     useMediaQuery,
-    useTheme
+    useTheme,
+    Menu,
+    MenuItem,
+    ListItemIcon,
+    ListItemText
 } from '@mui/material';
-import { Close as CloseIcon, Download as DownloadIcon, ContentCopy as CopyIcon } from '@mui/icons-material';
+import { Close as CloseIcon, Download as DownloadIcon, ContentCopy as CopyIcon, Share as ShareIcon } from '@mui/icons-material';
+import {
+    FacebookShareButton,
+    TwitterShareButton,
+    LinkedinShareButton,
+    TelegramShareButton,
+    WhatsappShareButton,
+    FacebookIcon,
+    TwitterIcon,
+    LinkedinIcon,
+    TelegramIcon,
+    WhatsappIcon
+} from 'react-share';
 import QRCode from 'qrcode';
 
 interface QrCodeModalProps {
@@ -28,9 +44,30 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
     const [loading, setLoading] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [shareMenuAnchor, setShareMenuAnchor] = useState<null | HTMLElement>(null);
     
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+    // Create the share URL using our backend API
+    const baseUrl = window.location.origin;
+    const questionnaireUrl = `${baseUrl}/questionnaire/${questionnaireId}`;
+    const qrImageUrl = `${baseUrl}/api/socialshare/qr?url=${encodeURIComponent(questionnaireUrl)}`;
+    
+    const shareUrl = `${baseUrl}/api/socialshare/share-questionnaire?` +
+        `title=${encodeURIComponent(questionnaireTitle || `Questionnaire #${questionnaireId}`)}&` +
+        `description=${encodeURIComponent('Fill out this questionnaire and help us gather valuable insights!')}&` +
+        `url=${encodeURIComponent(questionnaireUrl)}&` +
+        `imageUrl=${encodeURIComponent(qrImageUrl)}`;
+
+    const shareTitle = questionnaireTitle || `Questionnaire #${questionnaireId}`;
+
+    // Debug logging
+    console.log('QrCodeModal Debug:', {
+        questionnaireId,
+        questionnaireUrl,
+        shareUrl
+    });
 
     useEffect(() => {
         const generateQrCodeEffect = async () => {
@@ -178,6 +215,91 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
                                 >
                                     {`${window.location.origin}/questionnaire/${questionnaireId}`}
                                 </Typography>
+                                
+                                {/* Share Button */}
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<ShareIcon />}
+                                    onClick={(event) => setShareMenuAnchor(event.currentTarget)}
+                                    sx={{ mt: 2, borderRadius: 2 }}
+                                >
+                                    Share
+                                </Button>
+                                
+                                {/* Share Menu */}
+                                <Menu
+                                    anchorEl={shareMenuAnchor}
+                                    open={Boolean(shareMenuAnchor)}
+                                    onClose={() => setShareMenuAnchor(null)}
+                                    PaperProps={{
+                                        sx: { minWidth: 200 }
+                                    }}
+                                >
+                                    <MenuItem onClick={() => setShareMenuAnchor(null)}>
+                                        <FacebookShareButton
+                                            url={shareUrl}
+                                            title={shareTitle}
+                                            style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                                        >
+                                            <ListItemIcon>
+                                                <FacebookIcon size={24} round />
+                                            </ListItemIcon>
+                                            <ListItemText primary="Facebook" />
+                                        </FacebookShareButton>
+                                    </MenuItem>
+                                    
+                                    <MenuItem onClick={() => setShareMenuAnchor(null)}>
+                                        <TwitterShareButton
+                                            url={shareUrl}
+                                            title={shareTitle}
+                                            style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                                        >
+                                            <ListItemIcon>
+                                                <TwitterIcon size={24} round />
+                                            </ListItemIcon>
+                                            <ListItemText primary="Twitter" />
+                                        </TwitterShareButton>
+                                    </MenuItem>
+                                    
+                                    <MenuItem onClick={() => setShareMenuAnchor(null)}>
+                                        <LinkedinShareButton
+                                            url={shareUrl}
+                                            title={shareTitle}
+                                            style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                                        >
+                                            <ListItemIcon>
+                                                <LinkedinIcon size={24} round />
+                                            </ListItemIcon>
+                                            <ListItemText primary="LinkedIn" />
+                                        </LinkedinShareButton>
+                                    </MenuItem>
+                                    
+                                    <MenuItem onClick={() => setShareMenuAnchor(null)}>
+                                        <TelegramShareButton
+                                            url={shareUrl}
+                                            title={shareTitle}
+                                            style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                                        >
+                                            <ListItemIcon>
+                                                <TelegramIcon size={24} round />
+                                            </ListItemIcon>
+                                            <ListItemText primary="Telegram" />
+                                        </TelegramShareButton>
+                                    </MenuItem>
+                                    
+                                    <MenuItem onClick={() => setShareMenuAnchor(null)}>
+                                        <WhatsappShareButton
+                                            url={shareUrl}
+                                            title={shareTitle}
+                                            style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+                                        >
+                                            <ListItemIcon>
+                                                <WhatsappIcon size={24} round />
+                                            </ListItemIcon>
+                                            <ListItemText primary="WhatsApp" />
+                                        </WhatsappShareButton>
+                                    </MenuItem>
+                                </Menu>
                             </>
                         ) : (
                             <Typography color="error">Failed to generate QR code</Typography>
