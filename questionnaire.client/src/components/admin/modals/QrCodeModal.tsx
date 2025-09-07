@@ -52,9 +52,9 @@ const QrCodeModal = ({ open, onClose, questionnaireId, questionnaireTitle }: QrC
     // Create the share URL using our backend API
     const baseUrl = window.location.origin;
     const questionnaireUrl = `${baseUrl}/questionnaire/${questionnaireId}`;
-    const qrImageUrl = `${baseUrl}/api/socialshare/qr?url=${encodeURIComponent(questionnaireUrl)}`;
+    const qrImageUrl = `${import.meta.env.VITE_API_BASE_URL}/api/socialshare/qr?url=${encodeURIComponent(questionnaireUrl)}`;
     
-    const shareUrl = `${baseUrl}/api/socialshare/share-questionnaire?` +
+    const shareUrl = `${import.meta.env.VITE_API_BASE_URL}/api/socialshare/share-questionnaire?` +
         `title=${encodeURIComponent(questionnaireTitle || `Questionnaire #${questionnaireId}`)}&` +
         `description=${encodeURIComponent('Fill out this questionnaire and help us gather valuable insights!')}&` +
         `url=${encodeURIComponent(questionnaireUrl)}&` +
