@@ -38,7 +38,7 @@ namespace Questionnaire.Server.Controllers
     {(string.IsNullOrEmpty(imageUrl) ? "" : $@"<meta property=""og:image"" content=""{imageUrl}"" />")}
     
     <!-- Twitter Card metadata -->
-    <meta name=""twitter:card"" content=""summary"" />
+    <meta name=""twitter:card"" content=""summary_large_image"" />
     <meta name=""twitter:title"" content=""{title}"" />
     <meta name=""twitter:description"" content=""{description}"" />
     {(string.IsNullOrEmpty(imageUrl) ? "" : $@"<meta name=""twitter:image"" content=""{imageUrl}"" />")}
@@ -95,7 +95,7 @@ namespace Questionnaire.Server.Controllers
     <meta property=""og:image"" content=""{qrImageUrl}"" />
     
     <!-- Twitter Card metadata -->
-    <meta name=""twitter:card"" content=""summary"" />
+    <meta name=""twitter:card"" content=""summary_large_image"" />
     <meta name=""twitter:title"" content=""{title}"" />
     <meta name=""twitter:description"" content=""{description}"" />
     <meta name=""twitter:image"" content=""{qrImageUrl}"" />
