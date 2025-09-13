@@ -88,12 +88,6 @@ namespace Questionnaire.Server.Controllers
                 user.IsAdmin = IsAdminEmail(googleUserInfo.Email); // Configure this method
                 await _context.SaveChangesAsync();
 
-                // Check if user is admin (this is also enforced by JWT claims)
-                if (!user.IsAdmin)
-                {
-                    return Forbid("Access denied. Admin privileges required.");
-                }
-
                 // Generate JWT token
                 var token = _jwtService.GenerateToken(user);
 
