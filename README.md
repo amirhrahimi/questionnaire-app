@@ -128,6 +128,48 @@ The application supports both in-memory and PostgreSQL databases:
 - **Development**: Uses in-memory database by default
 - **Production**: Automatically uses PostgreSQL from `DATABASE_URL`
 
+### 📦 Centralized Package Management
+
+This project uses **Central Package Management (CPM)** to maintain consistent package versions across all projects:
+
+#### Key Files
+
+- **`Directory.Build.props`** - Common MSBuild properties for all projects
+- **`Directory.Packages.props`** - Centralized NuGet package version management
+- **`nuget.config`** - NuGet configuration and package source mapping
+
+#### Benefits
+
+- **Consistent Versions** - All projects use the same package versions
+- **Easier Updates** - Update package versions in one place
+- **Reduced Conflicts** - Eliminates version conflicts between projects
+- **Better Security** - Centralized security update management
+
+#### Managing Packages
+
+**Adding a new package:**
+
+```powershell
+# Add version to Directory.Packages.props
+<PackageVersion Include="NewPackage.Name" Version="1.0.0" />
+
+# Reference in project file (without version)
+<PackageReference Include="NewPackage.Name" />
+```
+
+**Updating package versions:**
+
+```powershell
+# Update version in Directory.Packages.props only
+<PackageVersion Include="ExistingPackage" Version="2.0.0" />
+```
+
+**Checking for updates:**
+
+```powershell
+dotnet list package --outdated
+```
+
 ## 🌐 Environment Variables
 
 ### Required Environment Variables
@@ -241,29 +283,35 @@ cd questionnaire.client
 npm test
 ```
 
-## � Project Structure
+## 📁 Project Structure
 
-```
-├── Questionnaire.Server/          # .NET 8 Web API
-│   ├── Controllers/               # API controllers
-│   ├── Models/                    # Data models
-│   ├── DTOs/                      # Data transfer objects
-│   ├── Services/                  # Business logic services
-│   ├── Data/                      # Entity Framework context
-│   ├── Migrations/                # Database migrations
-│   └── Dockerfile                 # Docker configuration
-├── questionnaire.client/          # React TypeScript frontend
+```text
+├── Directory.Build.props             # Common MSBuild properties
+├── Directory.Packages.props          # Centralized package versions  
+├── nuget.config                      # NuGet configuration
+├── Questionnaire.sln                 # Solution file
+├── Questionnaire.Server/             # .NET 8 Web API
+│   ├── Controllers/                  # API controllers
+│   ├── Models/                       # Data models
+│   ├── DTOs/                         # Data transfer objects
+│   ├── Services/                     # Business logic services
+│   ├── Data/                         # Entity Framework context
+│   ├── Migrations/                   # Database migrations
+│   └── Dockerfile                    # Docker configuration
+├── Questionnaire.Server.Test/        # Unit tests
+│   └── Questionnaire.Server.Test.csproj
+├── questionnaire.client/             # React TypeScript frontend
 │   ├── src/
-│   │   ├── components/            # React components
-│   │   ├── contexts/              # React contexts
-│   │   ├── services/              # API services
-│   │   ├── hooks/                 # Custom hooks
-│   │   └── utils/                 # Utility functions
-│   ├── public/                    # Static assets
-│   └── Dockerfile                 # Docker configuration
-├── sample_data.sql               # Sample database data
-├── test-questionnaire.json       # Test questionnaire structure
-└── README.md                     # This file
+│   │   ├── components/               # React components
+│   │   ├── contexts/                 # React contexts
+│   │   ├── services/                 # API services
+│   │   ├── hooks/                    # Custom hooks
+│   │   └── utils/                    # Utility functions
+│   ├── public/                       # Static assets
+│   └── Dockerfile                    # Docker configuration
+├── sample_data.sql                   # Sample database data
+├── test-questionnaire.json           # Test questionnaire structure
+└── README.md                         # This file
 ```
 
 ## 🤝 Contributing

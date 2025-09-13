@@ -1,0 +1,71 @@
+<Project>
+
+  <!-- Central Package Management (CPM) for all NuGet packages -->
+  <!-- This file centralizes package versions across all projects in the solution -->
+  
+  <PropertyGroup>
+    <!-- Enable Central Package Management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Central package management should override transitive dependencies -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup Label="Microsoft Packages">
+    <!-- ASP.NET Core packages -->
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.8" />
+    
+    <!-- Entity Framework packages -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8" />
+    
+    <!-- Visual Studio and Development Tools -->
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    
+    <!-- Testing packages -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    
+    <!-- Code Analysis -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
+  </ItemGroup>
+
+  <ItemGroup Label="Third Party Packages">
+    <!-- Authentication and Security -->
+    <PackageVersion Include="Google.Apis.Auth" Version="1.70.0" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+    
+    <!-- Database -->
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
+    
+    <!-- Utilities -->
+    <PackageVersion Include="OpenGraph-Net" Version="4.0.1" />
+    <PackageVersion Include="QRCoder" Version="1.6.0" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Testing Packages">
+    <!-- Test Framework -->
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+    
+    <!-- Mocking -->
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    
+    <!-- Code Coverage -->
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+  </ItemGroup>
+
+  <!-- Global package references that apply to all projects -->
+  <ItemGroup Condition="'$(IsTestProject)' != 'true'">
+    <!-- Add global packages here that should be included in all non-test projects -->
+  </ItemGroup>
+
+  <!-- Test-specific packages are automatically included via GlobalPackageReference -->
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <!-- These packages will be automatically included in test projects -->
+  </ItemGroup>
+
+</Project>
