@@ -94,3 +94,62 @@ export const mockQuestionnaireList: Questionnaire[] = [
 export const mockJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3QgVXNlciIsImlhdCI6MTUxNjIzOTAyMn0.abc123'
 
 export const mockFingerprint = 'test-fingerprint-123'
+
+// Additional admin-specific mock data
+export const mockActiveQuestionnaire: Questionnaire = {
+  id: '3',
+  title: 'Active Survey',
+  description: 'An active questionnaire with responses',
+  createdAt: new Date('2024-01-03T00:00:00Z').toISOString(),
+  isActive: true,
+  responseCount: 15,
+  questions: [
+    {
+      id: 1,
+      text: 'Rate our service',
+      type: 1,
+      isRequired: true,
+      order: 1,
+      options: [
+        { id: 1, text: 'Excellent', order: 1 },
+        { id: 2, text: 'Good', order: 2 },
+        { id: 3, text: 'Fair', order: 3 },
+        { id: 4, text: 'Poor', order: 4 }
+      ]
+    }
+  ]
+}
+
+export const mockInactiveQuestionnaire: Questionnaire = {
+  id: '4',
+  title: 'Inactive Survey',
+  description: 'An inactive questionnaire',
+  createdAt: new Date('2024-01-04T00:00:00Z').toISOString(),
+  isActive: false,
+  responseCount: 3,
+  questions: []
+}
+
+export const mockAdminQuestionnaireList: Questionnaire[] = [
+  mockQuestionnaire,
+  mockActiveQuestionnaire,
+  mockInactiveQuestionnaire,
+  {
+    id: '5',
+    title: 'Empty Survey',
+    description: 'A survey with no responses',
+    createdAt: new Date('2024-01-05T00:00:00Z').toISOString(),
+    isActive: true,
+    responseCount: 0,
+    questions: [
+      {
+        id: 1,
+        text: 'Sample question',
+        type: 3,
+        isRequired: false,
+        order: 1,
+        options: []
+      }
+    ]
+  }
+]
