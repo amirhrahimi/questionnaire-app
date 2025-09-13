@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy package management files first
-COPY ../Directory.Packages.props ./
+COPY Directory.Packages.props ./
 COPY *.csproj ./
 RUN dotnet restore
 
